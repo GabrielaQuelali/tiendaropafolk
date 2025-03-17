@@ -508,13 +508,17 @@ function precioVenta($enlaceCon,$codigo,$agencia){
 	
 	$consulta="select p.`precio` from precios p where p.`codigo_material`='$codigo' and p.`cod_precio`='1' and p.cod_ciudad='$agencia'";
 	$rs=mysqli_query($enlaceCon,$consulta);
-	$registro=mysqli_fetch_array($rs);
-	$precioVenta=$registro[0];
-	if($precioVenta=="")
-	{   $precioVenta=0;
-	}
+		$precioVenta=0;
+		while($registro=mysqli_fetch_array($rs))
+		{ $precioVenta=$registro[0];
+		}
+if($precioVenta==NULL){
+			$precioVenta=0;
+		}
+		if($precioVenta>0){
+		$precioVenta=redondear2($precioVenta);
+		}
 
-	$precioVenta=redondear2($precioVenta);
 	return $precioVenta;
 }
 //COSTO 
@@ -523,31 +527,39 @@ function costoVentaFalse($enlaceCon,$codigo,$agencia){
 		s.cod_salida_almacenes=sd.cod_salida_almacen and s.cod_almacen in  
 		(select a.cod_almacen from almacenes a where a.cod_ciudad='$agencia') and s.salida_anulada=0 and 
 		sd.cod_material='$codigo' limit 0,1";
-	$rs=mysqli_query($enlaceCon,$consulta);
-	$registro=mysqli_fetch_array($rs);
-	$costoVenta=$registro[0];
-	if($costoVenta=="")
-	{   $costoVenta=0;
-	}
-
-	$costoVenta=redondear2($costoVenta);
+		$rs=mysqli_query($enlaceCon,$consulta);
+		$costoVenta=0;
+		while($registro=mysqli_fetch_array($rs))
+		{ $costoVenta=$registro[0];
+		}
+		if($costoVenta==NULL){
+			$costoVenta=0;
+		}
+		if($costoVenta>0){
+		$costoVenta=redondear2($costoVenta);
+		}
 	return $costoVenta;
 }
 
 function costoVenta($enlaceCon,$codigo,$agencia){	
 	$consulta="select id.costo_almacen from ingreso_almacenes i, ingreso_detalle_almacenes id where 
 	i.cod_ingreso_almacen=id.cod_ingreso_almacen and i.cod_almacen in  
-			(select a.cod_almacen from almacenes a where a.cod_ciudad='$agencia') and i.ingreso_anulado=0 
+			(select a.cod_almacen from almacenes a where a.cod_ciudad='$agencia') and i.ingreso_anulado=1 
 	and id.cod_material='$codigo' order by i.cod_ingreso_almacen desc limit 0,1";
+	//echo $consulta;
+	$costoVenta=0;
 	$rs=mysqli_query($enlaceCon,$consulta);
-	$registro=mysqli_fetch_array($rs);
-	$costoVenta=$registro[0];
-	if($costoVenta=="")
-	{   $costoVenta=0;
-	}
-
-	$costoVenta=redondear2($costoVenta);
+		while($registro=mysqli_fetch_array($rs))
+		{ $costoVenta=$registro[0];
+		}
+		if($costoVenta==NULL){
+			$costoVenta=0;
+		}
+		if($costoVenta>0){
+		$costoVenta=redondear2($costoVenta);
+		}
 	return $costoVenta;
+
 }
 
 
@@ -672,8 +684,7 @@ function obtenerEstadoSalida($codSalida){
 		where s.`fecha` BETWEEN '$fechaInicio' and '$fechaFinal'
 		and s.`salida_anulada`= 1 and s.`cod_tiposalida`=1001 and sd.cod_material = '$codProducto' and 
 		s.`cod_almacen` in (select a.`cod_almacen` from `almacenes` a where a.`cod_ciudad` in ($ciudades) )
-		group by m.codigo_material 
-		limit 0,1 ";
+		group by m.codigo_material";
 	//echo $sqlGrupos."<br>";
 	$respGrupos=mysqli_query($enlaceCon,$sqlGrupos);
 
@@ -730,116 +741,6 @@ function obtenerEstadoSalida($codSalida){
 	$array = array($costoProducto, $jsonInsumosProductos, $obsCosto);
 	mysqli_close($enlaceCon); 
 	return $array;
-} 
-
-function obtenerCostoInsumosProductoUnitario($codProducto, $ciudades) {
-	$estilosVenta = 1;
-	require("conexionmysqli2.inc");
-
-	error_reporting(E_ALL);
-	ini_set('display_errors', '1');
-
-
-	$codProductoX = $codProducto;
-	$costoInsumosX = 0;
-	$insumos = [];
-	$sql = "SELECT ip.cod_insumo, mi.descripcion_material as nombreinsumo, u.nombre as unidad, ip.cant, pr.precio
-			FROM insumos_productos ip 
-			LEFT JOIN material_apoyo m ON m.codigo_material=ip.cod_producto 
-			LEFT JOIN material_apoyo mi ON mi.codigo_material=ip.cod_insumo 
-			LEFT JOIN unidades_medida u ON u.codigo=ip.cod_unidad_medida 
-			LEFT JOIN precios pr ON pr.codigo_material=ip.cod_insumo
-			WHERE ip.cod_producto IN ($codProductoX) 
-			AND pr.cod_precio=0 
-			AND pr.cod_ciudad=1";
-	$resp = mysqli_query($enlaceCon, $sql);
-	while ($dat = mysqli_fetch_assoc($resp)) {	
-		$codInsumoX     = $dat['cod_insumo'];
-		$nombreInsumoX  = $dat['nombreinsumo'];
-		$unidadMedidaX  = $dat['unidad'];
-		$cantidadInsumoX = $dat['cant'];
-		$precioInsumoX  = $dat['precio'];
-		$subtotal       = $cantidadInsumoX * $precioInsumoX;
-		$costoInsumosX += $subtotal;
-			$insumos[] = [
-				'cod_insumo'   => $codInsumoX,
-				'nombre'       => $nombreInsumoX,
-				'unidad'       => $unidadMedidaX,
-				'cantidad'     => $cantidadInsumoX,
-				'precio'       => $precioInsumoX,
-				'subtotal'     => $subtotal
-			];
-	}
-	mysqli_close($enlaceCon); 
-		$json = json_encode([
-			'producto' => $codProductoX,
-			'costo_total' => $costoInsumosX,
-			'insumos' => $insumos
-		]);
-	$arrayInsumos = array($costoInsumosX, $json);
-	return $arrayInsumos;
-}
-
-
-function obtenerCostoInsumosProductoFake($codProducto, $fechaInicio, $fechaFinal, $ciudades) {
-	$estilosVenta=1;
-	require("conexionmysqli2.inc");
-
-	$jsonInsumosProductos="";
-	$arrayProductos = array();
-	$indice=1;
-	if($indice==1) {
-		$codProductoX=$codProducto;
-		$nombreProductoX="producto";
-		$montoVentaX=1;
-		$cantidadProductoX=1;
-		
-		$sql="SELECT ip.cod_insumo,mi.descripcion_material as nombreinsumo,u.nombre,ip.cant, pr.precio
-		FROM insumos_productos ip 
-		LEFT JOIN material_apoyo m ON m.codigo_material=ip.cod_producto 
-		LEFT JOIN material_apoyo mi ON mi.codigo_material=ip.cod_insumo 
-		LEFT JOIN unidades_medida u ON u.codigo=ip.cod_unidad_medida 
-		LEFT JOIN precios pr ON pr.codigo_material=ip.cod_insumo
-		WHERE ip.cod_producto IN ($codProductoX) and pr.cod_precio=0 and pr.cod_ciudad=1";
-		
-		//echo "<br>".$sql."<br>";
-		
-		$resp=mysqli_query($enlaceCon,$sql);
-		$costoInsumosX=0;
-		$arrayInsumos=array();
-		while($dat=mysqli_fetch_assoc($resp)){	
-			$codInsumoX=$dat['cod_insumo'];
-			$nombreInsumoX=$dat['nombreinsumo'];
-			$unidadMedidaX=$dat['nombre'];
-			$cantidadInsumoX=$dat['cant'];
-			$precioInsumoX=$dat['precio'];
-			$costoInsumosX+=$cantidadInsumoX*$precioInsumoX;
-			if($cantidadInsumoX==0 || $precioInsumoX==0){
-				$obsCosto=1;
-			}
-			$arrayInsumos[]= array(
-				"nombreInsumo" => $nombreInsumoX,
-				"unidadMedida" => $unidadMedidaX,
-				"cantidadInsumo" => $cantidadInsumoX,
-				"precioInsumo" => $precioInsumoX,
-				"costoInsumo" => $costoProducto				
-			);
-		}
-		$costoProducto+=$costoInsumosX;
-		$arrayProductos[] = array(
-			"nombreProducto" => $nombreProductoX,
-			"montoVentaProducto"=> $montoVentaX,
-			"cantidadProducto" => $cantidadProductoX,
-			"detalleInsumos" => $arrayInsumos
-		);
-		$indice++;
-		//echo "<br>COSTO: ".$costoInsumosX." CANTIDAD: ".$cantidadProductoX."<br>";
-	}
-	//DEVOLVEMOS EL ARRAY CON EL COSTO PRODUCTO  EL JSON PARA LISTAR EL DETALLE Y LAS OBSERVACIONES SI HAY PRECIO O CANTIDAD EN 0
-	$jsonInsumosProductos = json_encode($arrayProductos);
-	$array = array($costoProducto, $jsonInsumosProductos, $obsCosto);
-	mysqli_close($enlaceCon); 
-	return $array;
 }  
 
 // function obtenerCostoInsumosProducto($codProducto) {
@@ -885,29 +786,6 @@ function obtenerCostoInsumosProductoFake($codProducto, $fechaInicio, $fechaFinal
 // 	return $array;
 // }
 
-function obtenerCostosTotalesUnitariosProducto($codigoProductos, $ciudades){
-	$estilosVenta=1;
-	require("conexionmysqli2.inc");
-	$sql = "SELECT m.codigo_material, m.descripcion_material
-	from material_apoyo m 
-	LEFT JOIN producto_costo_detalle pcd ON pcd.cod_producto=m.codigo_material 
-	LEFT JOIN producto_costo pc ON pc.cod_producto_costo=pcd.cod_producto_costo 
-	where m.codigo_material in ($codigoProductos) and pcd.cod_producto is null 
-	GROUP BY m.codigo_material";
-	$resp = mysqli_query($enlaceCon, $sql);
-	$costoInsumos=0;
-	$costoProcesos=0;
-	while ($datos = mysqli_fetch_array($resp)) {
-		$codProductoFinal = $datos[0];
-		$nombreItem = $datos[1];
-		$arrayInsumos = obtenerCostoInsumosProductoUnitario($codProductoFinal, $rptTerritorioString);
-		$costoInsumos += $arrayInsumos[0];
-
-		$costoProcesos += obtenerCostoProcesosUnitario($codProductoFinal);
-	}
-	return ($costoInsumos + $costoProcesos);
-}
-
 function obtenerCostoInsumosGrupo($codGrupo, $fechaInicio, $fechaFinal, $ciudades) {
 	$estilosVenta=1;
 	require("conexionmysqli2.inc");
@@ -922,9 +800,7 @@ function obtenerCostoInsumosGrupo($codGrupo, $fechaInicio, $fechaFinal, $ciudade
 		where s.`fecha` BETWEEN '$fechaInicio' and '$fechaFinal'
 		and s.`salida_anulada`= 1 and s.`cod_tiposalida`=1001 and pcd.cod_producto_costo='$codGrupo' and 
 		s.`cod_almacen` in (select a.`cod_almacen` from `almacenes` a where a.`cod_ciudad` in ($ciudades) )
-		group by m.codigo_material 
-
-		limit 0,1";
+		group by m.codigo_material ";
 	//echo $sqlGrupos."<br>";
 	$respGrupos=mysqli_query($enlaceCon,$sqlGrupos);
 
@@ -1023,9 +899,7 @@ function obtenerCostoProcesos($codProducto, $fechaInicio, $fechaFin) {
 	LEFT JOIN ingreso_almacenes i ON i.cod_ingreso_almacen=id.cod_ingreso_almacen
 	LEFT JOIN almacenes a ON a.cod_almacen=s.cod_almacen 
 	INNER JOIN material_apoyo m ON m.codigo_material=sd.cod_material
-	WHERE s.salida_anulada=1 and s.cod_tiposalida=1001 and sd.cod_material='$codProducto' and s.fecha between '$fechaInicio' and '$fechaFin'	
-
-	limit 0,1";
+	WHERE s.salida_anulada=1 and s.cod_tiposalida=1001 and sd.cod_material='$codProducto' and s.fecha between '$fechaInicio' and '$fechaFin'	";
 	//echo $sql."<br><br>";
 	$costoProcesoTotal=0;
 	$obsCosto=0;
@@ -1067,126 +941,6 @@ function obtenerCostoProcesos($codProducto, $fechaInicio, $fechaFin) {
 	return $array;
 }
 
-
-function obtenerCostoProcesosUnitarioBase($codProducto) {
-	require("conexionmysqlipdf.inc");
-	$sqlCostoProceso="SELECT sum(pcp.costo_proceso_const) from procesos_construccion pc, procesos_construccion_producto pcp
-		where pc.cod_proceso_const=pcp.cod_proceso_const and pcp.cod_producto=$codProducto";
-	$respCostoProceso=mysqli_query($enlaceCon, $sqlCostoProceso);
-
-	$costoProducto=0;
-	while($datCostoProceso=mysqli_fetch_array($respCostoProceso)){	
-		$costoProducto+=$datCostoProceso[0];
-	}
-	return $costoProducto;
-}
-
-function obtenerCostoProcesosUnitarioBaseJson($codProducto) {
-    require("conexionmysqlipdf.inc");
-    $sqlCostoProceso = "
-        SELECT pc.nombre_proceso_const, pcp.costo_proceso_const
-        FROM procesos_construccion pc
-        JOIN procesos_construccion_producto pcp ON pc.cod_proceso_const = pcp.cod_proceso_const
-        WHERE pcp.cod_producto = $codProducto
-    ";
-    $respCostoProceso = mysqli_query($enlaceCon, $sqlCostoProceso);
-    if (!$respCostoProceso) {
-        // En caso de error en la consulta, devolver un JSON con el mensaje de error
-        return json_encode(["error" => "Error en la consulta: " . mysqli_error($enlaceCon)]);
-    }
-    $procesos = [];
-    while ($fila = mysqli_fetch_assoc($respCostoProceso)) {
-        $procesos[] = [
-            "nombre_proceso" => $fila['nombre_proceso_const'],
-            "costo_proceso" => (float)$fila['costo_proceso_const']
-        ];
-    }
-    mysqli_close($enlaceCon);
-    return json_encode($procesos);
-}
-
-function obtenerCostoProcesosUnitario($codProducto) {
-	require("conexionmysqlipdf.inc");
-	
-	$sqlLoteX="SELECT l.codigo_material, l.cod_lote from lotes_produccion l where l.codigo_material=$codProducto;";
-	$respLoteX=mysqli_query($enlaceCon, $sqlLoteX);
-
-	$costoProcesoTotal=0;
-	$obsCosto=0;
-	$json_array = array();
-	$resp=mysqli_query($enlaceCon,$sql);
-	$indice=1;
-	if($datLoteX=mysqli_fetch_array($respLoteX)){	
-		$fechaX="2024-01-01";
-		$nombreAlmacenX="Principal";
-		$codigoProductoX=$$datLoteX[0];
-		$nombreProductoX="nombrePRod";
-		$cantidadProductoX="1";
-		$loteProductoX=$datLoteX[1];
-		if($loteProductoX==0 || $loteProductoX==''){
-			/*Cuando la obs es 2 es cuando no tiene salidas por lote y tomamos un lote generico*/ 
-			$obsCosto=2;
-		}
-
-		$arrayCostoProceso=obtenerCostoProcesoLote($codProducto,$loteProductoX);
-		list($costoSubProceso, $jsonSubProceso, $banderaObsProcesos) = $arrayCostoProceso;
-		if($banderaObsProcesos==1){
-			$obsCosto=1;
-		}
-		$costoProcesoTotal=$costoProcesoTotal+$costoSubProceso;
-	}
-	mysqli_close($enlaceCon); 
-	return $costoProcesoTotal;
-}
-
-function obtenerCostoProcesosFake($codProducto, $fechaInicio, $fechaFin) {
-	require("conexionmysqlipdf.inc");
-	
-	$sqlLoteX="SELECT l.codigo_material, l.cod_lote from lotes_produccion l where l.codigo_material=$codProducto;";
-	$respLoteX=mysqli_query($enlaceCon, $sqlLoteX);
-
-	$costoProcesoTotal=0;
-	$obsCosto=0;
-	$json_array = array();
-	$resp=mysqli_query($enlaceCon,$sql);
-	$indice=1;
-	if($datLoteX=mysqli_fetch_array($respLoteX)){	
-		$fechaX="2024-01-01";
-		$nombreAlmacenX="Principal";
-		$codigoProductoX=$$datLoteX[0];
-		$nombreProductoX="nombrePRod";
-		$cantidadProductoX="1";
-		$loteProductoX=$datLoteX[1];
-		if($loteProductoX==0 || $loteProductoX==''){
-			/*Cuando la obs es 2 es cuando no tiene salidas por lote y tomamos un lote generico*/ 
-			$obsCosto=2;
-		}
-
-		$arrayCostoProceso=obtenerCostoProcesoLote($codProducto,$loteProductoX);
-		list($costoSubProceso, $jsonSubProceso, $banderaObsProcesos) = $arrayCostoProceso;
-		if($banderaObsProcesos==1){
-			$obsCosto=1;
-		}
-		$costoProcesoTotal=$costoProcesoTotal+$costoSubProceso;
-
-		$json_array[]= array(
-			"nombreAlmacen" => $nombreAlmacenX,
-			"fecha" => $fechaX,
-			"codigoProducto" => $codigoProductoX,
-			"nombreProducto" => $nombreProductoX,
-			"cantidadProducto" => $cantidadProductoX,
-			"loteProducto" => $loteProductoX,
-			"detalleProcesos" => $jsonSubProceso			
-		);
-		$indice++;
-	}
-	$jsonProcesos = json_encode($json_array);
-	//DEVOLVEMOS EL ARRAY CON EL COSTO PRODUCTO  EL JSON PARA LISTAR EL DETALLE Y LAS OBSERVACIONES SI HAY PRECIO O CANTIDAD EN 0
-	$array = array($costoProcesoTotal, $jsonProcesos, $obsCosto);
-	mysqli_close($enlaceCon); 
-	return $array;
-}
-
 function obtenerCostoProcesosGrupo($codGrupo, $fechaInicio, $fechaFinal, $ciudades) {
 	require("conexionmysqlipdf.inc");
 
@@ -1200,8 +954,7 @@ function obtenerCostoProcesosGrupo($codGrupo, $fechaInicio, $fechaFinal, $ciudad
 	where s.`fecha` BETWEEN '$fechaInicio' and '$fechaFinal'
 	and s.`salida_anulada`= 1 and s.`cod_tiposalida`=1001 and pcd.cod_producto_costo='$codGrupo' and 
 	s.`cod_almacen` in (select a.`cod_almacen` from `almacenes` a where a.`cod_ciudad` in ($ciudades) )
-	group by m.codigo_material 
-	limit 0,1";
+	group by m.codigo_material ";
 	//echo "<br>".$sqlGrupos."<br>";
 	$respGrupos=mysqli_query($enlaceCon,$sqlGrupos);
 	$costoProductoProcesos=0;
@@ -1219,8 +972,7 @@ function obtenerCostoProcesosGrupo($codGrupo, $fechaInicio, $fechaFinal, $ciudad
 		LEFT JOIN ingreso_almacenes i ON i.cod_ingreso_almacen=id.cod_ingreso_almacen
 		LEFT JOIN almacenes a ON a.cod_almacen=s.cod_almacen 
 		INNER JOIN material_apoyo m ON m.codigo_material=sd.cod_material
-		WHERE s.salida_anulada=1 and s.cod_tiposalida=1001 and sd.cod_material='$codProductoX' and s.fecha between '$fechaInicio' and '$fechaFinal' 
-		limit 0,1";
+		WHERE s.salida_anulada=1 and s.cod_tiposalida=1001 and sd.cod_material='$codProductoX' and s.fecha between '$fechaInicio' and '$fechaFinal' ";
 
 		$costoProcesoTotal=0;
 		$obsCosto=0;
@@ -1289,9 +1041,7 @@ function obtenerCostoProcesoLote($codProducto,$loteProducto) {
 	LEFT JOIN proveedores p ON p.cod_proveedor=lpc.cod_proveedor
 	LEFT JOIN procesos_construccion pc ON pc.cod_proceso_const=lpc.cod_proceso_const
 	where l.codigo_material='$codProducto' and l.cod_lote='$codigoLoteProducto'";
-	
 	//echo $sqlProcesos."<br>";	
-	
 	$costoProceso=0;
 	$obsCosto=0;
 	$json_array = array();
@@ -1330,8 +1080,7 @@ function montoVentasSucursal($sucursal,$desde,$hasta){
 	group by sd.cod_material";
 	//echo $sql;
 	$resp=mysqli_query($enlaceCon,$sql);
-  	$montoTotal=0;		
-  	$cantidadTotal=0;		
+  	$montoTotal=0;				
   	while($datos=mysqli_fetch_array($resp)){		
 		$codigoProducto=$datos[0];
 		$montoVentaProducto=$datos[1];
@@ -1344,13 +1093,9 @@ function montoVentasSucursal($sucursal,$desde,$hasta){
 			$montoVentaProducto=$montoVentaProducto-$descuentoAdiProducto;
 		}
 		$montoTotal=$montoTotal+$montoVentaProducto;
-		$cantidadTotal += $cantidad;
 	}	  
   	mysqli_close($enlaceCon);
-  	$arrayMontosCantidadesTotales[0]=$montoTotal;
-  	$arrayMontosCantidadesTotales[1]=$cantidadTotal;
-
-  	return $arrayMontosCantidadesTotales;
+  	return $montoTotal;
 }
 
 function montoVentasSucursalExcepciones($sucursal,$desde,$hasta){
@@ -1389,151 +1134,6 @@ function montoVentasSucursalExcepciones($sucursal,$desde,$hasta){
    }
    mysqli_close($enlaceCon);
    return $montoVenta;
-}
-
-function montoCostosInsumosProcesosTotal($rptTerritorioString,$fecha_iniconsulta,$fecha_finconsulta){
-	require("conexionmysqlipdf.inc");
-	$sql = "SELECT pc.cod_producto_costo, pc.nombre_producto_costo,
-	    (sum(sd.monto_unitario)-sum(sd.descuento_unitario))montoVenta, sum(sd.cantidad_unitaria), s.descuento, s.monto_total, 'GRUPO' as tipoagrupacion, pc.costo_si_no
-	    from salida_almacenes s
-	    INNER JOIN salida_detalle_almacenes sd ON s.cod_salida_almacenes=sd.cod_salida_almacen
-	    INNER JOIN producto_costo_detalle pcd ON pcd.cod_producto=sd.cod_material
-	    INNER JOIN producto_costo pc ON pc.cod_producto_costo=pcd.cod_producto_costo
-	    where s.`fecha` BETWEEN '$fecha_iniconsulta' and '$fecha_finconsulta'
-	    and s.`salida_anulada`= 1 and s.`cod_tiposalida`=1001 and  
-	    s.`cod_almacen` in (select a.`cod_almacen` from `almacenes` a where a.`cod_ciudad` in ($rptTerritorioString) )";
-	$sql.=" GROUP BY pc.cod_producto_costo
-	    UNION 
-	    SELECT m.codigo_material, m.descripcion_material,
-	    (sum(sd.monto_unitario)-sum(sd.descuento_unitario))montoVenta, sum(sd.cantidad_unitaria), s.descuento, s.monto_total,'PRODUCTO'  as tipoagrupacion, m.costo_si_no
-	    from salida_almacenes s
-	    INNER JOIN salida_detalle_almacenes sd ON s.cod_salida_almacenes=sd.cod_salida_almacen
-	    INNER JOIN material_apoyo m ON sd.cod_material=m.codigo_material
-	    LEFT JOIN producto_costo_detalle pcd ON pcd.cod_producto=m.codigo_material
-	    LEFT JOIN  producto_costo pc ON pc.cod_producto_costo=pcd.cod_producto_costo
-	    where s.`fecha` BETWEEN '$fecha_iniconsulta' and '$fecha_finconsulta'
-	    and s.`salida_anulada`= 1 and s.`cod_tiposalida`=1001 and  
-	    s.`cod_almacen` in (select a.`cod_almacen` from `almacenes` a where a.`cod_ciudad` in ($rptTerritorioString) ) and 
-	    pcd.cod_producto is null "; 
-	    $sql.=" GROUP BY m.codigo_material
-	    order by montoVenta desc";
-	$totalmontoInsumosReporte=0;
-	$totalmontoProcesosReporte=0;
-	$resp = mysqli_query($enlaceCon, $sql);
-	while ($datos = mysqli_fetch_array($resp)) {
-		$codProductoFinal = $datos[0];
-		$cantidad = $datos[3];
-		$tipoAgrupacion = $datos[6];
-
-		/*INSUMOS*/
-		if ($tipoAgrupacion == 'GRUPO') {
-			$arrayCostoInsumos = obtenerCostoInsumosGrupo($codProductoFinal, $fecha_iniconsulta, $fecha_finconsulta, $rptTerritorioString);
-			list($costoInsumos, $jsonInsumos, $banderaObsInsumos) = $arrayCostoInsumos;
-			$totalmontoInsumosReporte += ($costoInsumos);
-		} else {
-			$arrayCostoInsumos = obtenerCostoInsumosProducto($codProductoFinal, $fecha_iniconsulta, $fecha_finconsulta, $rptTerritorioString);
-			list($costoInsumos, $jsonInsumos, $banderaObsInsumos) = $arrayCostoInsumos;
-			$totalmontoInsumosReporte += ($costoInsumos * $cantidad);
-		}
-		/*FIN INSUMOS*/
-		
-		/* INICIO PROCESOS*/
-		if ($tipoAgrupacion == 'GRUPO') {
-			$arrayCostoProcesos = obtenerCostoProcesosGrupo($codProductoFinal, $fecha_iniconsulta, $fecha_finconsulta, $rptTerritorioString);
-			list($costoProcesos, $jsonProcesos, $banderaObsProcesos) = $arrayCostoProcesos;
-		} else {
-			$arrayCostoProcesos = obtenerCostoProcesos($codProductoFinal, $fecha_iniconsulta, $fecha_finconsulta);
-			list($costoProcesos, $jsonProcesos, $banderaObsProcesos) = $arrayCostoProcesos;
-		}
-		$totalmontoProcesosReporte += $costoProcesos * $cantidad;		
-		/* FIN PROCESOS*/
-	}
-	$arrayTotalesCostos[0]=$totalmontoInsumosReporte;
-	$arrayTotalesCostos[1]=$totalmontoProcesosReporte;
-
-	return ($arrayTotalesCostos);
-}
-
-
-
-
-function preciosVentaDistintos($sucursales, $codProducto, $fechaIni, $fechaFin){
-	require("conexionmysqlipdf.inc");
-	/*ESTA PARTE SACA LOS PRECIOS DISTINTOS QUE HAY EN EL SISTEMA*/
-	$sqlPrecios="";
-	if($tipoAgrupacion == 'GRUPO'){
-		$sqlPrecios="SELECT pc.cod_producto_costo, sum(sd.cantidad_unitaria), sd.precio_unitario
-	    from salida_almacenes s
-	    INNER JOIN salida_detalle_almacenes sd ON s.cod_salida_almacenes=sd.cod_salida_almacen
-	    INNER JOIN producto_costo_detalle pcd ON pcd.cod_producto=sd.cod_material
-	    INNER JOIN producto_costo pc ON pc.cod_producto_costo=pcd.cod_producto_costo
-	    where s.`fecha` BETWEEN '$fechaIni' and '$fechaFin'
-	    and s.`salida_anulada`= 1 and s.`cod_tiposalida`=1001 and  
-	    s.`cod_almacen` in (select a.`cod_almacen` from `almacenes` a where a.`cod_ciudad` in ($sucursales) ) and pc.cod_producto_costo='$codProducto' ";
-		$sqlPrecios.=" GROUP BY pc.cod_producto_costo, sd.precio_unitario";
-	}else{
-		$sqlPrecios="SELECT m.codigo_material, sum(sd.cantidad_unitaria), sd.precio_unitario
-	    from salida_almacenes s
-	    INNER JOIN salida_detalle_almacenes sd ON s.cod_salida_almacenes=sd.cod_salida_almacen
-	    INNER JOIN material_apoyo m ON sd.cod_material=m.codigo_material
-	    LEFT JOIN producto_costo_detalle pcd ON pcd.cod_producto=m.codigo_material
-	    LEFT JOIN  producto_costo pc ON pc.cod_producto_costo=pcd.cod_producto_costo
-	    where s.`fecha` BETWEEN '$fechaIni' and '$fechaFin'
-	    and s.`salida_anulada`= 1 and s.`cod_tiposalida`=1001 and  
-	    s.`cod_almacen` in (select a.`cod_almacen` from `almacenes` a where a.`cod_ciudad` in ($sucursales) ) and 
-	    pcd.cod_producto is null and m.codigo_material='$codProducto'"; 
-    	$sqlPrecios.=" GROUP BY m.codigo_material, sd.precio_unitario ";
-
-	}
-	$respPrecios=mysqli_query($enlaceCon, $sqlPrecios);
-	$titlePreciosDetalle="";
-	while($datPrecios=mysqli_fetch_array($respPrecios)){
-		$titlePreciosDetalle.="Cant. ".$datPrecios[1]." Precio: ".$datPrecios[2]."\n";
-	}
-	return ($titlePreciosDetalle);
-	/*FIN PRECIOS*/
-}
-
-function preciosMayorProducto($sucursales, $codProducto, $fechaIni, $fechaFin, $tipoAgrupacion){
-	require("conexionmysqlipdf.inc");
-	/*ESTA PARTE SACA LOS PRECIOS DISTINTOS QUE HAY EN EL SISTEMA*/
-	$sqlPrecios="";
-	if($tipoAgrupacion == 'GRUPO'){
-		$sqlPrecios="SELECT pc.cod_producto_costo, sum(sd.cantidad_unitaria), sd.precio_unitario
-	    from salida_almacenes s
-	    INNER JOIN salida_detalle_almacenes sd ON s.cod_salida_almacenes=sd.cod_salida_almacen
-	    INNER JOIN producto_costo_detalle pcd ON pcd.cod_producto=sd.cod_material
-	    INNER JOIN producto_costo pc ON pc.cod_producto_costo=pcd.cod_producto_costo
-	    where s.`fecha` BETWEEN '$fechaIni' and '$fechaFin'
-	    and s.`salida_anulada`= 1 and s.`cod_tiposalida`=1001 and  
-	    s.`cod_almacen` in (select a.`cod_almacen` from `almacenes` a where a.`cod_ciudad` in ($sucursales) ) and pc.cod_producto_costo='$codProducto' ";
-		$sqlPrecios.=" GROUP BY pc.cod_producto_costo, sd.precio_unitario";
-	}else{
-		$sqlPrecios="SELECT m.codigo_material, sum(sd.cantidad_unitaria), sd.precio_unitario
-	    from salida_almacenes s
-	    INNER JOIN salida_detalle_almacenes sd ON s.cod_salida_almacenes=sd.cod_salida_almacen
-	    INNER JOIN material_apoyo m ON sd.cod_material=m.codigo_material
-	    LEFT JOIN producto_costo_detalle pcd ON pcd.cod_producto=m.codigo_material
-	    LEFT JOIN  producto_costo pc ON pc.cod_producto_costo=pcd.cod_producto_costo
-	    where s.`fecha` BETWEEN '$fechaIni' and '$fechaFin'
-	    and s.`salida_anulada`= 1 and s.`cod_tiposalida`=1001 and  
-	    s.`cod_almacen` in (select a.`cod_almacen` from `almacenes` a where a.`cod_ciudad` in ($sucursales) ) and 
-	    pcd.cod_producto is null and m.codigo_material='$codProducto'"; 
-    	$sqlPrecios.=" GROUP BY m.codigo_material, sd.precio_unitario ";
-
-	}
-	$respPrecios=mysqli_query($enlaceCon, $sqlPrecios);
-	$titlePreciosDetalle="";
-	$precioMayor=0;
-	$cantidadMayor=0;
-	while($datPrecios=mysqli_fetch_array($respPrecios)){
-		if($datPrecios[1]>$cantidadMayor){
-			$cantidadMayor=$datPrecios[1];
-			$precioMayor=$datPrecios[2];
-		}
-	}
-	return ($precioMayor);
-	/*FIN PRECIOS*/
 }
 
 function obtenerDetalleGastos($sucursal,$desde,$hasta){
