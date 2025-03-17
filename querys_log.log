@@ -1,0 +1,7 @@
+[Mon, 30 May 2022 21:50:07 -0400][query]#####salida_almacenes##########[INSERT INTO `salida_almacenes`(`cod_salida_almacenes`, `cod_almacen`,`cod_tiposalida`, 
+			`cod_tipo_doc`, `fecha`, `hora_salida`, `territorio_destino`, 
+			`almacen_destino`, `observaciones`, `estado_salida`, `nro_correlativo`, `salida_anulada`, 
+			`cod_cliente`, `monto_total`, `descuento`, `monto_final`, razon_social, nit, cod_chofer, cod_vehiculo, monto_cancelado, cod_dosificacion, monto_efectivo, monto_cambio,cod_tipopago,created_by,created_at,cod_tipopreciogeneral,cod_tipoventa2,monto_cancelado_bs,monto_cancelado_usd,tipo_cambio,cod_delivery,siat_cuis,siat_cuf,siat_codigotipodocumentoidentidad,siat_complemento,siat_codigoPuntoVenta,siat_excepcion,siat_codigocufd,siat_cod_leyenda)
+			values ('4804', '1000', '1001', '1', '2022-05-30', '21:50:07', '0', '2', 
+			'', '1', 'CUIS INCORRECTO / VENCIDO', 0, '146', '155', '0', '155', 'SULLCAMANI', 
+			'10916889', '1001', '',0,'','263.3','108.3','2','1001','2022-05-30 21:50:07','0','1','8','37','6.90','0','AA6F08D1','','1','','16',0,'','')]#####guardarSalidaMaterial.php#####-

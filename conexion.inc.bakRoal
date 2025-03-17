@@ -1,0 +1,17 @@
+<?php
+
+if(!function_exists('register_globals')){
+	include('register_globals.php');
+	register_globals();
+}else{
+}
+
+$conexion=mysql_connect("localhost","root","123456789");
+$bd=mysql_select_db("kidsplace");
+
+
+$sqlUTF=mysql_query("SET NAMES utf8");
+
+date_default_timezone_set('America/La_Paz');
+
+?>
