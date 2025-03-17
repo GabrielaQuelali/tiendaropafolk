@@ -504,17 +504,22 @@ function nombreTipoDoc($enlaceCon,$codigo){
 	return $nombre;
 }
 
+
 function precioVenta($enlaceCon,$codigo,$agencia){
 	
 	$consulta="select p.`precio` from precios p where p.`codigo_material`='$codigo' and p.`cod_precio`='1' and p.cod_ciudad='$agencia'";
 	$rs=mysqli_query($enlaceCon,$consulta);
-	$registro=mysqli_fetch_array($rs);
-	$precioVenta=$registro[0];
-	if($precioVenta=="")
-	{   $precioVenta=0;
-	}
+		$precioVenta=0;
+		while($registro=mysqli_fetch_array($rs))
+		{ $precioVenta=$registro[0];
+		}
+if($precioVenta==NULL){
+			$precioVenta=0;
+		}
+		if($precioVenta>0){
+		$precioVenta=redondear2($precioVenta);
+		}
 
-	$precioVenta=redondear2($precioVenta);
 	return $precioVenta;
 }
 //COSTO 
@@ -523,31 +528,39 @@ function costoVentaFalse($enlaceCon,$codigo,$agencia){
 		s.cod_salida_almacenes=sd.cod_salida_almacen and s.cod_almacen in  
 		(select a.cod_almacen from almacenes a where a.cod_ciudad='$agencia') and s.salida_anulada=0 and 
 		sd.cod_material='$codigo' limit 0,1";
-	$rs=mysqli_query($enlaceCon,$consulta);
-	$registro=mysqli_fetch_array($rs);
-	$costoVenta=$registro[0];
-	if($costoVenta=="")
-	{   $costoVenta=0;
-	}
-
-	$costoVenta=redondear2($costoVenta);
+		$rs=mysqli_query($enlaceCon,$consulta);
+		$costoVenta=0;
+		while($registro=mysqli_fetch_array($rs))
+		{ $costoVenta=$registro[0];
+		}
+		if($costoVenta==NULL){
+			$costoVenta=0;
+		}
+		if($costoVenta>0){
+		$costoVenta=redondear2($costoVenta);
+		}
 	return $costoVenta;
 }
 
 function costoVenta($enlaceCon,$codigo,$agencia){	
 	$consulta="select id.costo_almacen from ingreso_almacenes i, ingreso_detalle_almacenes id where 
 	i.cod_ingreso_almacen=id.cod_ingreso_almacen and i.cod_almacen in  
-			(select a.cod_almacen from almacenes a where a.cod_ciudad='$agencia') and i.ingreso_anulado=0 
+			(select a.cod_almacen from almacenes a where a.cod_ciudad='$agencia') and i.ingreso_anulado=1 
 	and id.cod_material='$codigo' order by i.cod_ingreso_almacen desc limit 0,1";
+	//echo $consulta;
+	$costoVenta=0;
 	$rs=mysqli_query($enlaceCon,$consulta);
-	$registro=mysqli_fetch_array($rs);
-	$costoVenta=$registro[0];
-	if($costoVenta=="")
-	{   $costoVenta=0;
-	}
-
-	$costoVenta=redondear2($costoVenta);
+		while($registro=mysqli_fetch_array($rs))
+		{ $costoVenta=$registro[0];
+		}
+		if($costoVenta==NULL){
+			$costoVenta=0;
+		}
+		if($costoVenta>0){
+		$costoVenta=redondear2($costoVenta);
+		}
 	return $costoVenta;
+
 }
 
 
