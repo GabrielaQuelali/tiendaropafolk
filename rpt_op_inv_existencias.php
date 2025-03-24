@@ -20,11 +20,11 @@ echo "<script language='JavaScript'>
 			rpt_ordenar=f.rpt_ordenar.value;
 			rpt_barcode=f.barcode.value;
 			rpt_tipo=f.tipo.value;
-			rpt_modelo=f.rpt_modelo.value;
+	
 			
 			var rpt_grupo=new Array();	
 			var rpt_marca=new Array();	
-			var rpt_modelo=new Array();	
+		
 			
 			var rpt_formato=f.rpt_formato.value;
 			
@@ -44,16 +44,10 @@ echo "<script language='JavaScript'>
 				}
 			}
 			
-			var u=0;
-			for(p=0;p<=f.rpt_modelo.options.length-1;p++)
-			{	if(f.rpt_modelo.options[p].selected)
-				{	rpt_modelo[u]=f.rpt_modelo.options[p].value;
-					u++;
-				}
-			}	
+
 
 			//alert(rpt_modelo);
-			window.open('rpt_inv_existencias.php?rpt_territorio='+rpt_territorio+'&rpt_almacen='+rpt_almacen+'&rpt_ver='+rpt_ver+'&rpt_fecha='+rpt_fecha+'&rpt_ordenar='+rpt_ordenar+'&rpt_grupo='+rpt_grupo+'&rpt_marca='+rpt_marca+'&rpt_formato='+rpt_formato+'&rpt_barcode='+rpt_barcode+'&rpt_tipo='+rpt_tipo+'&rpt_modelo='+rpt_modelo,'','scrollbars=yes,status=no,toolbar=no,directories=no,menubar=no,resizable=yes,width=1000,height=800');
+			window.open('rpt_inv_existencias.php?rpt_territorio='+rpt_territorio+'&rpt_almacen='+rpt_almacen+'&rpt_ver='+rpt_ver+'&rpt_fecha='+rpt_fecha+'&rpt_ordenar='+rpt_ordenar+'&rpt_grupo='+rpt_grupo+'&rpt_marca='+rpt_marca+'&rpt_formato='+rpt_formato+'&rpt_barcode='+rpt_barcode+'&rpt_tipo='+rpt_tipo,'','scrollbars=yes,status=no,toolbar=no,directories=no,menubar=no,resizable=yes,width=1000,height=800');
 			return(true);
 		}
 
@@ -129,17 +123,7 @@ echo "<input type='hidden' id='tipo' name='tipo' value='$tipo'>";
 	}
 	echo "</select></td></tr>";
 
-	echo "<tr><th align='left'>Modelos</th><td>
-	<select name='rpt_modelo'  class='texto' size='10' multiple>";
-	$sqlMod="select codigo, nombre,abreviatura, estado from modelos  order by abreviatura asc";
-	$respMod=mysqli_query($enlaceCon,$sqlMod);
-	while($datMod=mysqli_fetch_array($respMod))
-	{	$codModelo=$datMod[0];
-		$nombreModelo=$datMod[1];
-		$abrevModelo=$datMod[2];
-		echo "<option value='$codModelo' selected>$abrevModelo-$nombreModelo</option>";
-	}
-	echo "</select></td></tr>";
+
 
 	echo "<tr><th align='left'>Marcas</th>
 	<td><select name='rpt_marca' class='texto' size='10' multiple>";

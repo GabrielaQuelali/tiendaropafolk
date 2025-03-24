@@ -92,7 +92,7 @@ group by mat.cod_modelo
 order by vend desc ";
 
 
-//echo $sql;
+echo $sql;
 
 $resp=mysqli_query($enlaceCon,$sql);
 ?>

@@ -164,8 +164,10 @@ include("datosUsuario.php");
 						
 							<li><a href="rpt_op_inv_existencias.php?tipo=1" target="contenedorPrincipal">Existencias Productos</a></li>
 							<li><a href="rpt_op_inv_existencias.php?tipo=2" target="contenedorPrincipal">Existencias Insumos</a></li>
-							<li><a href="rpt_op_inv_ingresos.php" target="contenedorPrincipal">Ingresos</a></li>
-							<li><a href="rpt_op_inv_salidas.php" target="contenedorPrincipal">Salidas</a></li>
+							<li><a href="rpt_op_inv_ingresos.php?tipo=1" target="contenedorPrincipal">Ingresos de Productos</a></li>
+							<li><a href="rpt_op_inv_ingresos.php?tipo=2" target="contenedorPrincipal">Ingresos de Insumos</a></li>
+							<li><a href="rpt_op_inv_salidas.php?tipo=1" target="contenedorPrincipal">Salidas de Productos</a></li>
+							<li><a href="rpt_op_inv_salidas.php?tipo=2" target="contenedorPrincipal">Salidas de Insumos </a></li>
 							
 						</ul>
 					</li>	
@@ -180,8 +182,15 @@ include("datosUsuario.php");
 							<!--li><a href="rptOpVentasDocumento.php" target="contenedorPrincipal">Ventas x Documento</a></li>
 							<li><a href="rptOpVentasxItem.php" target="contenedorPrincipal">Ranking de Ventas x Item</a></li-->
 							<li><a href="rptOpVentasGeneral.php" target="contenedorPrincipal">Ventas x Documento y Producto</a></li>
+							<li><a href="rptOpVentasGeneralSucursal2.php" target="contenedorPrincipal">Resumen de Ventas x Sucursal</a></li>
 							<li><a href="rptOpProductosMasVendidos.php" target="contenedorPrincipal">Productos mas Vendidos</a></li>
-							<li><a href="rptOpVentasGeneralSucursal.php" target="contenedorPrincipal">Resumen de Ventas x Sucursal</a></li>
+							<li><a href="rptOpVentasTallaModelo.php" target="contenedorPrincipal">Ventas x Modelo y Talla</a></li>
+							<li><a href="rptOpVentasColorModelo.php" target="contenedorPrincipal">Ventas x Color y Modelo
+							</a></li>
+							<li><a href="rptOpVentasColorSubgrupo.php" target="contenedorPrincipal">Ventas x Color y Subgrupo</a></li>
+							<li><a href="rptOpVentasModeloSubgrupo.php" target="contenedorPrincipal">Ventas x Modelo y Subgrupo</a></li>
+						
+							
 							<!--li><a href="rptOpVentasMarcasDet.php" target="contenedorPrincipal">Ventas x Marcas Detallado</a></li>
 							<li><a href="rptOpAjusteVentasProv.php" target="contenedorPrincipal">Ajuste de Ventas x Proveedor</a></li>
 							<li><a href="rptOpVentasxPersona.php" target="contenedorPrincipal">Ventas x Vendedor Resumido</a></li>
@@ -191,18 +200,15 @@ include("datosUsuario.php");
 					<li><a href="rptOpCtasxPagarSucursal.php" target="contenedorPrincipal"><span>Cuentas x Pagar</span></a></li>
 
 
-					<li><span>Gastos</span>
-						<ul>
-							<li><a href="rptOpGastos.php" target="contenedorPrincipal">Gastos</a></li>
-						</ul>
-					</li>
-					<li><span>Reportes Contables</span>
+					<li><a href="rptOpGastos.php" target="contenedorPrincipal">Gastos</a></li>
+					
+					<!--li><span>Reportes Contables</span>
 						<ul>
 							<li><a href="rptOpLibroVentas.php" target="contenedorPrincipal">Libro de Ventas</a></li>
 							<!--li><a href="" target="contenedorPrincipal">Libro de Compras</a></li-->
 							<!--li><a href="rptOpKardexCliente.php" target="contenedorPrincipal">Kardex x Cliente</a></li-->
-						</ul>	
-					</li>
+						<!--/ul>	
+					</li-->
 					<li><a href="rptOpAnalisisCostoPrecio.php" target="contenedorPrincipal">Analisis de Costos y Precios</a></li>
 					<li><a href="rptOpAnalisisCostoPrecioNuevos.php" target="contenedorPrincipal">Analisis de Costos y Precios Productos Nuevos</a></li>
 					<!--li><span>Utilidades</span>

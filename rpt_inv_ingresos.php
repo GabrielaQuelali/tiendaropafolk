@@ -1,12 +1,13 @@
 <?php
 require('estilos_reportes_almacencentral.php');
-require('conexionmysqli.php');
+require('conexionmysqli.inc');
 require('function_formatofecha.php');
 require('funciones.php');
 
 $rpt_territorio=$_POST['rpt_territorio'];
 $rpt_almacen=$_POST['rpt_almacen'];
 $tipo_ingreso=$_POST['tipo_ingreso'];
+$tipo=$_POST['tipo'];
 $tipoIngresoString=implode(",", $tipo_ingreso);
 
 $proveedor=$_POST['proveedor'];
@@ -36,9 +37,9 @@ echo "<h1>Reporte Ingresos Almacen</h1>
 	$sql="select i.cod_ingreso_almacen, i.fecha, ti.nombre_tipoingreso, i.observaciones, i.nota_entrega, i.nro_correlativo, i.ingreso_anulado, 
 	(select pr.nombre_proveedor from proveedores pr where pr.cod_proveedor=i.cod_proveedor)as proveedor
 	FROM ingreso_almacenes i, tipos_ingreso ti
-	where i.cod_tipoingreso=ti.cod_tipoingreso and i.cod_almacen='$rpt_almacen' and i.fecha>='$fecha_ini' and i.fecha<='$fecha_fin' and i.cod_tipoingreso in ($tipoIngresoString) and i.cod_proveedor in ($proveedorString) and i.ingreso_anulado=0 order by i.nro_correlativo";
+	where i.cod_tipoingreso=ti.cod_tipoingreso and i.cod_almacen='$rpt_almacen' and i.fecha>='$fecha_ini' and i.fecha<='$fecha_fin' and i.cod_tipoingreso in ($tipoIngresoString) and i.cod_proveedor in ($proveedorString) and i.ingreso_anulado=1 and i.cod_tipo=".$tipo." order by i.nro_correlativo";
 	
-	//echo $sql;
+	echo $sql;
 	$resp=mysqli_query($enlaceCon,$sql);
 	echo "<center><br><table class='texto' width='100%'>";
 	echo "<tr class='textomini'><th>Nro.</th><th>Nota de Entrega</th><th>Fecha</th><th>Tipo de Ingreso</th>
@@ -68,7 +69,7 @@ echo "<h1>Reporte Ingresos Almacen</h1>
 		if($num_filas_movimiento!=0)
 		{	$estado_ingreso="Con Movimiento";
 		}
-		if($anulado==1)
+		if($anulado==2)
 		{	$estado_ingreso="Anulado";
 		}
 		if($num_filas_movimiento==0 and $anulado==0)

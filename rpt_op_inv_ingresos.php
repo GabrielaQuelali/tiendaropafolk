@@ -32,7 +32,8 @@ function ajaxAlmacen(){
 	ajax.send(null)
 }
 		</script>";
-require("conexionmysqli.php");
+require("conexionmysqli.inc");
+$tipo=$_GET['tipo'];
 if($global_tipoalmacen==1)
 {	require("estilos_almacenes_central.inc");
 }
@@ -42,6 +43,7 @@ else
 echo "<h1>Reporte Ingresos Almacen</h1>";
 
 echo"<form method='post' action='rpt_inv_ingresos.php' target='_blank'>";
+echo "<input type='hidden' id='tipo' name='tipo' value='$tipo'>";
 	echo"\n<table class='texto' align='center'>\n";
 	echo "<tr><th align='left'>Territorio</th><td><select name='rpt_territorio' id='rpt_territorio' class='texto' onChange='ajaxAlmacen(this);' required>";
 	if($global_tipoalmacen==1)
@@ -80,7 +82,7 @@ echo"<form method='post' action='rpt_inv_ingresos.php' target='_blank'>";
 	echo "</select></td>";
 	
 	echo "<tr><th align='left'>Proveedor</th>";
-	$sqlProveedor="select cod_proveedor, nombre_proveedor from proveedores order by 2";
+	$sqlProveedor="select cod_proveedor, nombre_proveedor from proveedores where cod_tipo=".$tipo." order by 2";
 	//echo $sql_tipoingreso;
 	$respProveedor=mysqli_query($enlaceCon,$sqlProveedor);
 	echo "<td><select name='proveedor[]' class='texto' size='5' multiple required>";
