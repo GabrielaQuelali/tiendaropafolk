@@ -102,6 +102,7 @@ $fecha_fin = $_POST['fecha_fin'];
 $fecha_iniconsulta = $fecha_ini;
 $fecha_finconsulta = $fecha_fin;
 
+
 $rpt_territorio = $_POST['rpt_territorio'];
 $rptTerritorioString = implode(",", $rpt_territorio);
 
@@ -167,12 +168,6 @@ $sql.=" GROUP BY pc.cod_producto_costo
 
 //echo $sql;
 $resp = mysqli_query($enlaceCon, $sql);
-
-echo "<form method='POST' action='guardar_analisisnormal.php'>";
-
-
-echo "<input type='hidden' name='fecha_inicio' value='$fecha_iniconsulta'>";
-echo "<input type='hidden' name='fecha_final' value='$fecha_finconsulta'>";
 
 echo "<br>
 <table align='center' class='texto' width='100%'>
@@ -328,99 +323,51 @@ while ($datos = mysqli_fetch_array($resp)) {
 
 
 	echo "<tr>
-        <td><input type='checkbox' name='guardar[]' value='$codProductoFinal' checked></td>
-        <td>
-            <input type='hidden' name='codigo[]' value='$codProductoFinal'>
-            $codProductoFinal
-        </td>
-        <td>
-            <input type='hidden' name='nombre_producto[]' value='$nombreItem'>
-            $nombreItem
-        </td>
-        <td align='center'>
-            <input type='hidden' name='cantidad[]' value='$cantidad'>
-            $cantidadFormat
-        </td>
-        <td align='right'>
-            <input type='hidden' name='monto_venta[]' value='$montoVentaProducto'>
-            $montoVentaProductoF
-        </td>
-        <td align='right'>
-            <input type='hidden' name='costo_insumos[]' value='$costoInsumosTotalF'>
-            $costoInsumosTotalF
-        </td>
-        <td align='right'>
-            <input type='hidden' name='costo_procesos[]' value='$costoProcesosTotalProductoF'>
-            $costoProcesosTotalProductoF
-        </td>
-        <td align='right'>
-            <input type='hidden' name='total_costo_directo[]' value='$totalCostoDirectoProductoF'>
-            $totalCostoDirectoProductoF
-        </td>
-        <td align='right'>
-            <input type='hidden' name='comision[]' value='$montoComisionTiendaProductoF'>
-            $montoComisionTiendaProductoF
-        </td>
-        <td align='right'>
-            <input type='hidden' name='porcentaje_cantidad[]' value='$porcentajeCantidadProductoF'>
-            $porcentajeCantidadProductoF %
-        </td>
-        <td align='right'>
-            <input type='hidden' name='porcentaje_costo[]' value='$porcentajeCostoProductoF'>
-            $porcentajeCostoProductoF %
-        </td>
-        <td align='right'>
-            <input type='hidden' name='porcentaje_venta[]' value='$porcentajeVentaProductoF'>
-            $porcentajeVentaProductoF %
-        </td>
-        <td align='right'>
-            <input type='hidden' name='porcentaje_promedio[]' value='$porcentajeProductoPromedioF'>
-            $porcentajeProductoPromedioF %
-        </td>
-        <td align='right'>
-            <input type='hidden' name='otros_go[]' value='$montoOtrosGOProductoF'>
-            $montoOtrosGOProductoF
-        </td>
-        <td align='right'>
-            <input type='hidden' name='costo_directo_unitario[]' value='$totalCostoDirectoProductoF'>
-            $totalCostoDirectoProductoF
-        </td>
-        <td align='right'>
-            <input type='hidden' name='costo_indirecto_unitario[]' value='$totalCostoIndirectoProductoF'>
-            $totalCostoIndirectoProductoF
-        </td>
-        <td align='right' class='total-costo-unitario'>
-            <input type='hidden' name='costo_unitario[]' value='$totalCostoProductoUnitarioF'>
-            $totalCostoProductoUnitarioF
-        </td>
-        <td align='right'>
-            <input type='hidden' name='precio_venta[]' value='$precioMayorProductoF'>
-            $precioMayorProductoF
-        </td>
-        <td align='right'>
-            <input type='hidden' name='ganancia[]' value='$gananciaProductoF'>
-            $gananciaProductoF
-        </td>
-        <td align='right'>
-            <input type='hidden' name='margen[]' value='$margenGananciaProductoF'>
-            $margenGananciaProductoF %
-        </td>
-        <td align='center' style='border: gray 1px solid; background-color: LightBlue'>
-        	<input type='number' name='precio-consignacion-sf[]' class='precio-consignacion-sf' value='0' style='width: 10ch;'></td>
+        <td>$indice</td>
+		<td>$codProductoFinal</td>
+        <td>$nombreItem</td>
+		
+		<td align='center'>$cantidadFormat</td>
+		<td align='right'>$montoVentaProductoF</td>
+
+		<td align='right' class='costo-insumo-total'>
+			<a href='#' onclick='mostrarInsumosProductos($codProductoFinal,\"$tipoAgrupacion\",$jsonInsumosEncode);'>$costoInsumosTotalF</a>
+		</td>
+
+		<td align='right' class='costo-insumo-total'>
+			<a href='#' onclick='mostrarProcesosProductos($codProductoFinal,\"$tipoAgrupacion\",$jsonProcesosEncode)'>$costoProcesosTotalProductoF</a>
+		</td>	
+		
+		<td align='right'>$totalCostoDirectoProductoF</td>
+
+		<td align='right'>$montoComisionTiendaProductoF</td>
+
+		<td align='right'>$porcentajeCantidadProductoF %</td>
+		<td align='right'>$porcentajeCostoProductoF %</td>
+		<td align='right'>$porcentajeVentaProductoF %</td>
+		<td align='right'>$porcentajeProductoPromedioF %</td>
+		<td align='right'>$montoOtrosGOProductoF</td>
+		<td align='right'>$totalCostoDirectoProductoF</td>
+		<td align='right'>$totalCostoIndirectoProductoF</td>
+		<td align='right' class='total-costo-unitario'>$totalCostoProductoUnitarioF</td>
+		<td align='right'>$precioMayorProductoF</td>
+		<td align='right'>$gananciaProductoF</td>
+		<td align='right'>$margenGananciaProductoF %</td>
+
+		<td align='center' style='border: gray 1px solid; background-color: LightBlue'><input type='number' class='precio-consignacion-sf' value='0' style='width: 10ch;'></td>
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue' class='margen-consignacion-sf'>-</td>
 
-		<td align='center' style='border: gray 1px solid; background-color: LightBlue'>
-			<input type='number' name='precio-ventadirecta-sf[]' class='precio-ventadirecta-sf' value='0' style='width: 10ch;'></td>
+		<td align='center' style='border: gray 1px solid; background-color: LightBlue'><input type='number' class='precio-ventadirecta-sf' value='0' style='width: 10ch;'></td>
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue' class='margen-ventadirecta-sf'>-</td>
 
-		<td align='center' style='border: gray 1px solid; background-color: LightBlue'>
-			<input type='number' name='precio-sugerido-sf[]' class='precio-sugerido-sf' value='0' style='width: 10ch;'></td>
-
+		<td align='center' style='border: gray 1px solid; background-color: LightBlue'><input type='number' class='precio-sugerido-sf' value='0' style='width: 10ch;'></td>
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue' class='margen-sugerido-sf'>-</td>
+
 		<td align='center' style='display:none; border: gray 1px solid; background-color: LightBlue' class='precio-consignacion-cf'>-</td>
 		<td align='center' style='display:none; border: gray 1px solid; background-color: LightBlue' class='precio-ventadirecta-cf'>-</td>
 		<td align='center' style='display:none; border: gray 1px solid; background-color: LightBlue' class='precio-sugerido-cf'>-</td>
-    </tr>";
+		
+	</tr>";
 	$indice++;
 }
 echo "</tbody>";
@@ -457,11 +404,10 @@ echo "<tr>
 	<td><b id='ganancia-total-final'>$totalSumaGananciasF</b></td>
 	<td align='right'><b>$totalMargenProductoF %</b></td>
 	<tr>";
-
-echo "</tbody>";
 echo "</table>";
-echo "<center><input type='submit' class='boton2' value='Guardar Analisis'></center>";
-echo "</form>";
+
+
+echo "<center><input type='button' class='boton2' value='Guardar Analisis'></center>";
 
 ?>
 
@@ -530,75 +476,65 @@ echo "</form>";
 <!--    end small modal -->
 
 <script>
+	$(document).ready(function() {
+		function formatNumber(num) {
+			return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+		}
 
+		function parseFormattedNumber(numStr) {
+			return parseFloat(numStr.replace(/,/g, ''));
+		}
 
-$(document).ready(function() {
+		/***********************************************
+		 * ? Calculo de Precios Adicionales
+		 ***********************************************/
+		// 
+		$('#detalleCosto').on('keyup', '.precio-consignacion-sf', function() {
+			// Obtén la fila actual
+			var $row = $(this).closest('tr');
+			
+			// Obtiene Datos
+			var precioConsignacionSF = $row.find('.precio-consignacion-sf').val() || 0;
+			var totalCostoUnitario = parseFormattedNumber($row.find('.total-costo-unitario').text().trim());
 
-	$('form').submit(function(e) {
-	if($('input[name="guardar[]"]:checked').length === 0) {
-	    alert('Por favor seleccione al menos un item para guardar');
-	    e.preventDefault();
-	}
+			var v_margenConsignacionSF = formatNumber((1-(totalCostoUnitario/precioConsignacionSF))*100);
+			console.log('calculando: '+precioConsignacionSF+' '+totalCostoUnitario);
+			$row.find('.margen-consignacion-sf').text(v_margenConsignacionSF+' %');
+
+			var v_precioConsignacionCF = formatNumber(precioConsignacionSF / 0.84)
+			$row.find('.precio-consignacion-cf').text(v_precioConsignacionCF);
+		});
+
+		$('#detalleCosto').on('keyup', '.precio-ventadirecta-sf', function() {
+			// Obtén la fila actual
+			var $row = $(this).closest('tr');
+			
+			// Obtiene Datos
+			var precioSF = $row.find('.precio-ventadirecta-sf').val() || 0;
+			var totalCostoUnitario = parseFormattedNumber($row.find('.total-costo-unitario').text().trim());
+
+			var v_margenSF = formatNumber((1-(totalCostoUnitario/precioSF))*100);
+			console.log('calculando: '+precioSF+' '+totalCostoUnitario);
+			$row.find('.margen-ventadirecta-sf').text(v_margenSF+' %');
+
+			var v_precioCF = formatNumber(precioSF / 0.84)
+			$row.find('.precio-ventadirecta-cf').text(v_precioCF);
+		});
+
+		$('#detalleCosto').on('keyup', '.precio-sugerido-sf', function() {
+			// Obtén la fila actual
+			var $row = $(this).closest('tr');
+			
+			// Obtiene Datos
+			var precioSF = $row.find('.precio-sugerido-sf').val() || 0;
+			var totalCostoUnitario = parseFormattedNumber($row.find('.total-costo-unitario').text().trim());
+
+			var v_margenSF = formatNumber((1-(totalCostoUnitario/precioSF))*100);
+			console.log('calculando: '+precioSF+' '+totalCostoUnitario);
+			$row.find('.margen-sugerido-sf').text(v_margenSF+' %');
+
+			var v_precioCF = formatNumber(precioSF / 0.84)
+			$row.find('.precio-sugerido-cf').text(v_precioCF);
+		});
 	});
-
-    function formatNumber(num) {
-        return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
-    function parseFormattedNumber(numStr) {
-        return parseFloat(numStr.replace(/,/g, ''));
-    }
-
-    /***********************************************
-     * ? Calculo de Precios Adicionales
-     ***********************************************/
-    // Usar .on() para vincular eventos a elementos dinámicos
-    $(document).on('keyup', '.precio-consignacion-sf', function() {
-        // Obtén la fila actual
-        var $row = $(this).closest('tr');
-        
-        // Obtiene Datos
-        var precioConsignacionSF = $row.find('.precio-consignacion-sf').val() || 0;
-        var totalCostoUnitario = parseFormattedNumber($row.find('.total-costo-unitario').text().trim());
-
-        var v_margenConsignacionSF = formatNumber((1 - (totalCostoUnitario / precioConsignacionSF)) * 100);
-        console.log('calculando: ' + precioConsignacionSF + ' ' + totalCostoUnitario);
-        $row.find('.margen-consignacion-sf').text(v_margenConsignacionSF + ' %');
-
-        var v_precioConsignacionCF = formatNumber(precioConsignacionSF / 0.84);
-        $row.find('.precio-consignacion-cf').text(v_precioConsignacionCF);
-    });
-
-    $(document).on('keyup', '.precio-ventadirecta-sf', function() {
-        // Obtén la fila actual
-        var $row = $(this).closest('tr');
-        
-        // Obtiene Datos
-        var precioSF = $row.find('.precio-ventadirecta-sf').val() || 0;
-        var totalCostoUnitario = parseFormattedNumber($row.find('.total-costo-unitario').text().trim());
-
-        var v_margenSF = formatNumber((1 - (totalCostoUnitario / precioSF)) * 100);
-        console.log('calculando: ' + precioSF + ' ' + totalCostoUnitario);
-        $row.find('.margen-ventadirecta-sf').text(v_margenSF + ' %');
-
-        var v_precioCF = formatNumber(precioSF / 0.84);
-        $row.find('.precio-ventadirecta-cf').text(v_precioCF);
-    });
-
-    $(document).on('keyup', '.precio-sugerido-sf', function() {
-        // Obtén la fila actual
-        var $row = $(this).closest('tr');
-        
-        // Obtiene Datos
-        var precioSF = $row.find('.precio-sugerido-sf').val() || 0;
-        var totalCostoUnitario = parseFormattedNumber($row.find('.total-costo-unitario').text().trim());
-
-        var v_margenSF = formatNumber((1 - (totalCostoUnitario / precioSF)) * 100);
-        console.log('calculando: ' + precioSF + ' ' + totalCostoUnitario);
-        $row.find('.margen-sugerido-sf').text(v_margenSF + ' %');
-
-        var v_precioCF = formatNumber(precioSF / 0.84);
-        $row.find('.precio-sugerido-cf').text(v_precioCF);
-    });
-});
 </script>

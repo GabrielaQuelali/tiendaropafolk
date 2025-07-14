@@ -97,10 +97,6 @@ $sqlUTF = mysqli_query($enlaceCon, "SET NAMES utf8");
 $fecha_ini = $_POST['fecha_ini'];
 
 
-//desde esta parte viene el reporte en si
-$fecha_iniconsulta = $fecha_ini;
-
-
 $rpt_territorio = $_POST['rpt_territorio'];
 $rptTerritorioString = implode(",", $rpt_territorio);
 
@@ -134,6 +130,8 @@ GROUP BY m.codigo_material";
 //echo $sql;
 
 $resp = mysqli_query($enlaceCon, $sql);
+
+echo "<form method='POST' action='guardar_analisisnuevos.php'>";
 
 echo "<br>
 <table align='center' class='texto' width='100%'>
@@ -237,43 +235,70 @@ while ($datos = mysqli_fetch_array($resp)) {
 
 
 	echo "<tr>
-        <td>$indice</td>
-		<td>$codProductoFinal</td>
-        <td>$nombreItem</td>
+        <td><input type='checkbox' name='guardar[]' value='$codProductoFinal' checked></td>
+		<td>
+			<input type='hidden' name='codigo[]' value='$codProductoFinal'>
+			$codProductoFinal
+		</td>
+
+        <td>
+        	<input type='hidden' name='nombre_producto[]' value='$nombreItem'>
+        	$nombreItem
+    	</td>
 		
 		<td align='right' class='costo-insumo-total'>
+			<input type='hidden' name='costo_insumos[]' value='$costoInsumosF'>
 			<a href='#' onclick='mostrarInsumosProductos($codProductoFinal,$jsonInsumosEncode);'>$costoInsumosF</a>
 		</td>	
 		
 		<td align='right' class='costo-insumo-total'>
+			<input type='hidden' name='costo_procesos[]' value='$costoProcesosF'>
 			<a href='#' onclick='mostrarProcesosProductos($codProductoFinal,$jsonProcesosEncode);'>$costoProcesosF</a>
 		</td>	
 		
-		<td align='right' class='costo-directo-producto'>$totalCostoDirectoProductoF</td>
-
-		<td align='center' style='border: gray 1px solid; background-color: LightSalmon'>
-			<input type='number' class='cantidad-producir' value='0' style='width: 10ch;'>
-		</td>
-		<td align='center' style='border: gray 1px solid; background-color: LightSalmon'>
-			<input type='number' class='horas-produccion' value='0' style='width: 10ch;'>
+		<td align='right' class='costo-directo-producto'>
+			<input type='hidden' name='total_costo_directo[]' value='$totalCostoDirectoProductoF'>
+			$totalCostoDirectoProductoF
 		</td>
 
+		<td align='center' style='border: gray 1px solid; background-color: LightSalmon'>
+			<input type='number' class='cantidad-producir' name='cantidad-producir[]'  value='0' style='width: 10ch;'>
+		</td>
 
-		<td align='right' class='porcentaje-costo-unitario'>$porcentajeCostoProductoF</td>
+		<td align='center' style='border: gray 1px solid; background-color: LightSalmon'>
+			<input type='number' class='horas-produccion' name='horas-produccion[]' value='0' style='width: 10ch;'>
+		</td>
+
+		<td align='right' class='porcentaje-costo-unitario'>
+			<input type='hidden' name='porcentaje-costo-unitario[]' value='$porcentajeCostoProductoF'>
+			$porcentajeCostoProductoF
+		</td>
+
 		<td align='right' class='porcentaje-cantidad-producir'>-</td>
 
 		<td align='right' class='costo-indirecto-distribuido'>-</td>
+		
 		<td align='right' class='costo-indirecto-unitario'>-</td>
+		
 		<td align='right' class='total-costo-unitario'>-</td>
 
 		
-		<td align='center' style='border: gray 1px solid; background-color: LightBlue'><input type='number' class='precio-consignacion-sf' value='0' style='width: 10ch;'></td>
+		<td align='center' style='border: gray 1px solid; background-color: LightBlue'>
+			<input type='number' class='precio-consignacion-sf' name='precio-consignacion-sf[]' value='0' style='width: 10ch;'>
+		</td>
+		
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue' class='margen-consignacion-sf'>-</td>
 
-		<td align='center' style='border: gray 1px solid; background-color: LightBlue'><input type='number' class='precio-ventadirecta-sf' value='0' style='width: 10ch;'></td>
+		<td align='center' style='border: gray 1px solid; background-color: LightBlue'>
+			<input type='number' class='precio-ventadirecta-sf' name='precio-ventadirecta-sf[]' value='0' style='width: 10ch;'>
+		</td>
+		
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue' class='margen-ventadirecta-sf'>-</td>
 
-		<td align='center' style='border: gray 1px solid; background-color: LightBlue'><input type='number' class='precio-sugerido-sf' value='0' style='width: 10ch;'></td>
+		<td align='center' style='border: gray 1px solid; background-color: LightBlue'>
+			<input type='number' class='precio-sugerido-sf' name='precio-sugerido-sf[]' value='0' style='width: 10ch;'>
+		</td>
+		
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue' class='margen-sugerido-sf'>-</td>
 		
 	</tr>";
@@ -300,7 +325,7 @@ echo "<tr>
 echo "</table>";
 
 
-echo "<center><input type='button' class='boton2' value='Guardar Analisis'></center>";
+echo "<center><input type='submit' class='boton2' value='Guardar Analisis'></center>";
 
 ?>
 
@@ -374,6 +399,14 @@ echo "<center><input type='button' class='boton2' value='Guardar Analisis'></cen
 
 <script>	
 	$(document).ready(function() {
+		
+		$('form').submit(function(e) {
+		if($('input[name="guardar[]"]:checked').length === 0) {
+		    alert('Por favor seleccione al menos un item para guardar');
+		    e.preventDefault();
+		}
+		});
+
 		function formatNumber(num) {
 			return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 		}

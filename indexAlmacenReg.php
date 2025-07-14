@@ -148,6 +148,16 @@ include("datosUsuario.php");
 				</ul>	
 			</li>
 			<li><li><a href="listadoPagosProveedor.php" target="contenedorPrincipal">Pagos a Proveedor</a></li>
+
+			<li><span>Analisis de Costos y Precios </span>
+				<ul>
+					<li><a href="navegador_analisiscostos.php" target="contenedorPrincipal">Analisis de Costos y Precios</a></li>
+					<li><a href="navegador_analisiscostosnuevo.php" target="contenedorPrincipal">Analisis de Costos y Precios Productos Nuevos</a></li>
+					<!--li><a href="rptOpAnalisisCostoPrecioNuevos.php" target="contenedorPrincipal">Analisis de Costos y Precios Productos Nuevos</a></li-->
+					<!--li><a href="rptOpAnalisisCostoPrecio.php" target="contenedorPrincipal">Analisis de Costos y Precios</a></li>
+					<li><a href="rptOpAnalisisCostoPrecioNuevos.php" target="contenedorPrincipal">Analisis de Costos y Precios Productos Nuevos</a></li-->
+				</ul>	
+			</li>
 	
 			</li>
 			<li><span>Reportes</span>
@@ -203,8 +213,6 @@ include("datosUsuario.php");
 							<!--li><a href="rptOpKardexCliente.php" target="contenedorPrincipal">Kardex x Cliente</a></li-->
 						</ul>	
 					</li>
-					<li><a href="rptOpAnalisisCostoPrecio.php" target="contenedorPrincipal">Analisis de Costos y Precios</a></li>
-					<li><a href="rptOpAnalisisCostoPrecioNuevos.php" target="contenedorPrincipal">Analisis de Costos y Precios Productos Nuevos</a></li>
 					<!--li><span>Utilidades</span>
 						<ul>
 							<li><a href="rptOpUtilidadesDocumento.php" target="contenedorPrincipal">Utilidades x Documento</a></li>
