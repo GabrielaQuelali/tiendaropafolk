@@ -8,7 +8,8 @@ echo "<script language='JavaScript'>
 			fecha_ini=f.exafinicial.value;
 			fecha_fin=f.exaffinal.value;
 			tipo_reporte=f.tipo_reporte.value;
-			window.open('rpt_inv_salidas.php?rpt_territorio='+rpt_territorio+'&rpt_almacen='+rpt_almacen+'&tipo_salida='+tipo_salida+'&fecha_ini='+fecha_ini+'&fecha_fin='+fecha_fin+'&tipo_reporte='+tipo_reporte+'','','scrollbars=yes,status=no,toolbar=no,directories=no,menubar=no,resizable=yes,width=1000,height=800');
+			rpt_tipo=f.tipo.value;
+			window.open('rpt_inv_salidas.php?rpt_territorio='+rpt_territorio+'&rpt_almacen='+rpt_almacen+'&tipo_salida='+tipo_salida+'&fecha_ini='+fecha_ini+'&fecha_fin='+fecha_fin+'&tipo_reporte='+tipo_reporte+'&rpt_tipo='+rpt_tipo+'','','scrollbars=yes,status=no,toolbar=no,directories=no,menubar=no,resizable=yes,width=1000,height=800');
 			return(true);
 		}
 		function envia_select(form){
@@ -16,7 +17,8 @@ echo "<script language='JavaScript'>
 			return(true);
 		}
 		</script>";
-require("conexionmysqli.php");
+require("conexionmysqli.inc");
+$tipo=$_GET['tipo'];
 
 require("estilos_almacenes.inc");
 
@@ -24,6 +26,7 @@ $fecha_rptdefault=date("d/m/Y");
 echo "<h1>Reporte Salidas Almacen</h1>";
 
 echo"<form method='post' action=''>";
+echo "<input type='hidden' id='tipo' name='tipo' value='$tipo'>";
 	echo"\n<table class='texto' align='center'>\n";
 	echo "<tr><th align='left'>Territorio</th><td><select name='rpt_territorio' class='texto' onChange='envia_select(this.form)'>";
 	if($global_tipoalmacen==1)

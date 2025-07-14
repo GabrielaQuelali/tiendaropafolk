@@ -3,7 +3,7 @@
 //header("Content-Disposition: attachment; filename=archivo.xls");
 require('estilos_reportes_almacencentral.php');
 require('function_formatofecha.php');
-require('conexionmysqli.php');
+require("conexionmysqli.inc");
 require("funciones.php");
 
 $rptOrdenar=$_GET["rpt_ordenar"];
@@ -13,7 +13,6 @@ $rptFormato=$_GET["rpt_formato"];
 $rptBarCode=$_GET["rpt_barcode"];
 $rpt_ver=$_GET["rpt_ver"];
 $rpt_tipo=$_GET["rpt_tipo"];
-$rpt_modelo=$_GET["rpt_modelo"];
 //echo "rpt_modelo=".$rpt_modelo;
 //echo "rptMarca=".$rptMarca;
 
@@ -47,7 +46,7 @@ $txt_reporte="Fecha de Reporte <strong>$fecha_reporte</strong>";
 		
 $sql_item="select mp.codigo_material,mp.descripcion_material,mp.estado,mp.cod_grupo, g.nombre as nombreGrupo,
 mp.cod_tipomaterial,mp.cantidad_presentacion,mp.observaciones,mp.imagen,
-mp.cod_unidad, um.nombre as nombreUnidad,mp.peso, mp.cod_subgrupo,
+mp.cod_unidad, um.abreviatura as nombreUnidad,mp.peso, mp.cod_subgrupo,
 sg.nombre as nombreSubgrupo, 
 mp.cod_marca, mar.nombre as nombreMarca, mp.talla,tal.nombre as nombreTalla, mp.color, col.nombre as nombreColor,
 mp.codigo_anterior,
@@ -68,10 +67,6 @@ where mp.estado=1";
 if($rpt_tipo==1){
 	if($rpt_marca!="-1"){
 		$sql_item.=" and mp.cod_marca in(".$rptMarca.")";
-	}
-
-	if($rpt_modelo!="-1"){
-		$sql_item.=" and mp.cod_modelo in(".$rpt_modelo.")";
 	}
 
 }
@@ -104,12 +99,14 @@ $sql_item.=" order by mo.nombre asc ,  sg.nombre asc, ge.nombre asc, col.nombre 
 		$resp_item=mysqli_query($enlaceCon,$sql_item);
 		
 		if($rptOrdenar==1){
+
 			if($rptFormato==1){
 				echo "<br><table border=0 align='center' class='textomediano' width='70%'>
 				<thead>
 					<tr>
 					<th>Nro</th><th>Modelo</th><th>Grupo</th><th>SubGrupo</th>		
-	<th>Material</th><th>Genero</th><th>Color</th><th>Talla</th><th>Producto</th><th>Precio Actual</th><th>Cantidad</th>
+	<th>Material</th><th>Genero</th><th>Color</th><th>Talla</th><th>Producto</th><th>Unidad Medida</th><th>Precio Actual</th><th>Cantidad</th>
+	<th>Precio x Cantidad</th>
 
 				
 					</tr>
@@ -119,8 +116,7 @@ $sql_item.=" order by mo.nombre asc ,  sg.nombre asc, ge.nombre asc, col.nombre 
 				<thead>
 					<tr>
 										<th>Nro</th><th>Modelo</th><th>Grupo</th><th>SubGrupo</th>		
-	<th>Material</th><th>Genero</th><th>Color</th><th>Talla</th><th>Producto</th><th>Precio Actual</th><th>Cantidad</th>
-
+	<th>Material</th><th>Genero</th><th>Color</th><th>Talla</th><th>Producto</th><th>Unidad Medida</th><th>Precio Actual</th><th>Cantidad</th><th>Precio x Cantidad</th>
 				
 					<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
 					<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
@@ -136,7 +132,8 @@ $sql_item.=" order by mo.nombre asc ,  sg.nombre asc, ge.nombre asc, col.nombre 
 				<thead>
 					<tr>
 					<th>Nro</th><th>Modelo</th><th>Grupo</th><th>SubGrupo</th>		
-	<th>Material</th><th>Genero</th><th>Color</th><th>Talla</th><th>Producto</th><th>Precio Actual</th><th>Cantidad</th>
+	<th>Material</th><th>Genero</th><th>Color</th><th>Talla</th><th>Producto</th><th>Unidad Medida</th><th>Precio Actual</th><th>Cantidad</th>
+	<th>Precio x Cantidad</th>
 
 				
 					</tr>
@@ -145,7 +142,9 @@ $sql_item.=" order by mo.nombre asc ,  sg.nombre asc, ge.nombre asc, col.nombre 
 				echo "<br><table border=0 align='center' class='textomediano' width='70%'>
 				<thead>
 					<th>Nro</th><th>Modelo</th><th>Grupo</th><th>SubGrupo</th>		
-	<th>Material</th><th>Genero</th><th>Color</th><th>Talla</th><th>Producto</th><th>Precio Actual</th><th>Cantidad</th>
+	<th>Material</th><th>Genero</th><th>Color</th><th>Talla</th><th>Producto</th><th>Unidad Medida</th><th>Precio Actual</th><th>Cantidad</th>
+	<th>Precio x Cantidad</th>
+
 
 					<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
 					<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
@@ -155,6 +154,7 @@ $sql_item.=" order by mo.nombre asc ,  sg.nombre asc, ge.nombre asc, col.nombre 
 		}		
 		$indice=1;
 		$totalStock=0;
+		$totalPrecioxStock=0;
 		while($datos_item=mysqli_fetch_array($resp_item))
 		{	
 	
@@ -173,6 +173,7 @@ $sql_item.=" order by mo.nombre asc ,  sg.nombre asc, ge.nombre asc, col.nombre 
 						$precio0=0;
 						$precio0=redondear2($precio0);
 					}
+
 			///////////////
 			$descripcion_material=$datos_item['descripcion_material'];
 			$estado=$datos_item['estado'];
@@ -211,22 +212,22 @@ $sql_item.=" order by mo.nombre asc ,  sg.nombre asc, ge.nombre asc, col.nombre 
 				if($rptFormato==1){
 					$cadena_mostrar.="<tr><td>$indice</td><td>$abrevModelo - $nombreModelo</td><td>$nombreGrupo</td><td>$nombreSubgrupo</td>
 					<td>$nombreMaterial</td><td>$nombreGenero</td><td>$nombreColor</td><td>$nombreTalla</td>
-					<td>$codigo_item - $descripcion_material</td><td>$precio0</td>";
+					<td>$codigo_item - $descripcion_material</td><td>$nombreUnidad</td><td>$precio0</td>";
 				}else{//para inventario
 					$cadena_mostrar.="<tr><td>$indice</td><td>$nombreModelo</td><td>$nombreGrupo</td><td>$nombreSubgrupo</td>
 					<td>$nombreMaterial</td><td>$nombreGenero</td><td>$nombreColor</td><td>$nombreTalla</td>
-					<td>$codigo_item - $descripcion_material</td><td>$precio0</td>";
+					<td>$codigo_item - $descripcion_material</td><td>$nombreUnidad</td><td>$precio0</td>";
 				}
 			}else{
 			
 				if($rptFormato==1){
 					$cadena_mostrar.="<tr><td>$indice</td><td>$nombreModelo</td><td>$nombreGrupo</td><td>$nombreSubgrupo</td>
 					<td>$nombreMaterial</td><td>$nombreGenero</td><td>$nombreColor</td><td>$nombreTalla</td>
-					<td>$codigo_item - $descripcion_material</td><td>$precio0</td>";			
+					<td>$codigo_item - $descripcion_material</td><td>$nombreUnidad</td><td>$precio0</td>";			
 				}else{
 					$cadena_mostrar.="<tr><td>$indice</td><td>$nombreModelo</td><td>$nombreGrupo</td><td>$nombreSubgrupo</td>
 					<td>$nombreMaterial</td><td>$nombreGenero</td><td>$nombreColor</td><td>$nombreTalla</td>
-					<td>$codigo_item - $descripcion_material</td><td>$precio0</td>";				
+					<td>$codigo_item - $descripcion_material</td><td>$nombreUnidad</td><td>$precio0</td>";				
 				}
 			}
 			
@@ -253,14 +254,20 @@ $sql_item.=" order by mo.nombre asc ,  sg.nombre asc, ge.nombre asc, col.nombre 
 			//echo $stock2;
 			
 			$stock_real=$stock2;
+
+			$totalPrecioxStock=$totalPrecioxStock+($stock2*$precio0);
+
+			$precioxStock=$stock2*$precio0;
 			
 			if($stock2<0)
 			{	$cadena_mostrar.="<td align='center'>0</td>";
+				$cadena_mostrar.="<td align='center'>0</td>";
 				
 			}
 			else{	
 			
 				$cadena_mostrar.="<td align='center'>$stock2</td>";
+				$cadena_mostrar.="<td align='center'>$precioxStock</td>";
 				
 			}
 			
@@ -296,9 +303,13 @@ $sql_item.=" order by mo.nombre asc ,  sg.nombre asc, ge.nombre asc, col.nombre 
 			}
 			
 		}
-		echo "<tr><td colspan='9'>&nbsp;</td><td align='right'><strong>Total Productos</strong></td><td align='center'>$totalStock</td></tr>";
+		echo "<tr><td colspan='9'>&nbsp;</td>
+		<td align='right'><strong>TOTALES</strong></td>
+		<td align='center'>&nbsp;</td>		
+		<td align='center'>$totalStock</td>
+		<td align='center'>$totalPrecioxStock</td>";
 		//$cadena_mostrar.="</tbody>";
-		echo "</table>";
+		echo "<tr/></table>";
 		
 				include("imprimirInc.php");
 
