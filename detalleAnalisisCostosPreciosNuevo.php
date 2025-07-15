@@ -235,8 +235,8 @@ function formatPercentage($value) {
                             <td class="text-end"><?php echo ($fila['costo_procesos']); ?></td>
                             <td class="text-end"><?php echo ($fila['total_costo_directo']); ?></td>
 
-                            <td class="text-end"><?php echo ($fila['cantidad_producir']); ?></td>
-                            <td class="text-end"><?php echo ($fila['horas_producir']); ?></td>
+                            <td class="text-end" style="border: gray 1px solid; background-color: LightSalmon"><?php echo ($fila['cantidad_producir']); ?></td>
+                            <td class="text-end" style="border: gray 1px solid; background-color: LightSalmon"><?php echo ($fila['horas_producir']); ?></td>
                             
                             <td class="text-end"><?php echo formatPercentage(($fila['total_costo_directo']/$totalCostoDirectoReporte)*100); ?></td>
                             <td class="text-end"><?php echo formatPercentage(($fila['cantidad_producir']/$totalCantidadProducirReporte)*100); ?></td>
@@ -244,7 +244,7 @@ function formatPercentage($value) {
 
                             <td class="text-end <?php echo $margenClass; ?>"><?php echo ($fila['costo_indirectounitario']); ?></td>
                             <td class="text-end <?php echo $margenClass; ?>"><?php echo ($fila['costo_unitariototal']); ?></td>
-                            <td>
+                            <td style="border: gray 1px solid; background-color: LightBlue">
                                 <div class="d-flex flex-column small">
                                     <span><strong>Consig.:</strong> <?php echo ($fila['precio_consignacion_sf']); ?></span>
                                     <span><strong>Venta D.:</strong> <?php echo ($fila['precio_ventadirecta_sf']); ?></span>

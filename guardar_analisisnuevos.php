@@ -1,16 +1,22 @@
 <?php
 require ('conexionmysqli.php');
 
+
+ error_reporting(E_ALL);
+ ini_set('display_errors', '1');
+
 // Verificar si hay elementos seleccionados
 if(isset($_POST['guardar']) && !empty($_POST['guardar'])) {
     $selectedItems = $_POST['guardar'];
     
     $fechaProceso = date("Y-m-d");
 
-    $sqlCab = "INSERT INTO analisis_costos_nuevos (fecha_proceso) 
-        VALUES ('$fechaProceso')";
-    $respCab = mysqli_query($enlaceCon, $sqlCab);
+    $glosa = $_POST['glosa'];
 
+
+    $sqlCab = "INSERT INTO analisis_costos_nuevos (fecha_proceso,glosa) 
+        VALUES ('$fechaProceso','$glosa')";
+    $respCab = mysqli_query($enlaceCon, $sqlCab);
     $idAnalisis = mysqli_insert_id($enlaceCon);
 
     // Recorrer todos los datos enviados
@@ -26,6 +32,10 @@ if(isset($_POST['guardar']) && !empty($_POST['guardar'])) {
 
             $cantidadProducir = $_POST['cantidad-producir'][$index];
             $horasProduccion = $_POST['horas-produccion'][$index];
+
+            $costo_indirecto_distribuido = $_POST['costo_indirecto_distribuido'][$index];
+            $costo_indirecto_unitario = $_POST['costo_indirecto_unitario'][$index];
+            $costo_total_unitario = $_POST['costo_total_unitario'][$index];
             
             $porcentajeCostoUnitario = $_POST['porcentaje-costo-unitario'][$index];
 
@@ -43,13 +53,17 @@ if(isset($_POST['guardar']) && !empty($_POST['guardar'])) {
                     `costo_unitariototal`, `precio_consignacion_sf`, `precio_ventadirecta_sf`, `precio_sugerido_sf`) 
                     VALUES ('$idAnalisis', '$codProductoFinal', '$nombreItem', '$costoInsumos', 
                         '$costoProcesos', '$totalCostoDirecto', '$cantidadProducir', '$horasProduccion', 
-                        '$porcentajeCostoUnitario', '0', '0', '0',
-                        '0', '$precio_consignacion_sf', '$precio_ventadirecta_sf', '$precio_sugerido_sf')";
+                        '$porcentajeCostoUnitario', '0', '$costo_indirecto_distribuido', '$costo_indirecto_unitario',
+                        '$costo_total_unitario', '$precio_consignacion_sf', '$precio_ventadirecta_sf', '$precio_sugerido_sf')";
             echo $sql."<br>";
             $resp = mysqli_query($enlaceCon, $sql);
         }
     }
-    echo "Los Datos se guardaron correctamente.";
+    //echo "normal fin guardado";
+    echo "<script>
+        alert('Los Datos se guardaron correctamente');
+        location.href='navegador_analisiscostosnuevo.php';
+    </script>";
 } else {
     echo "No se seleccionaron items para guardar.";
 }

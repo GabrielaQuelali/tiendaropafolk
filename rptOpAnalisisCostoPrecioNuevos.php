@@ -42,7 +42,7 @@ echo"<form method='post' action='' target='_blank'>";
 
 	echo"\n<table class='texto' align='center' cellSpacing='0' width='50%'>\n";
 	echo "<tr><th align='left'>Territorio</th>
-		<td><select name='rpt_territorio[]' class='selectpicker' data-style='btn-success' data-live-search='true' multiple required>";
+		<td><select name='rpt_territorio[]' class='selectpicker' data-actions-box='true' data-style='btn-success' data-live-search='true' multiple required>";
 	$sql="select cod_ciudad, descripcion from ciudades order by descripcion";
 	$resp=mysqli_query($enlaceCon, $sql);
 	echo "<option value=''></option>";
@@ -53,11 +53,58 @@ echo"<form method='post' action='' target='_blank'>";
 	}
 	echo "</select></td></tr>";
 	
-	echo "<tr><th align='left'>Productos Creados despues de:</th>";
-			echo" <td>
-			<INPUT  type='date' class='texto' value='$fecha_rptdefault' id='fecha_ini' size='10' name='fecha_ini' required>";
-    		echo" <input type='button' onClick='buscarProductosFecha(this.form)' value='Ver Productos' class='boton-azul'></td>";
-	echo "</tr>";
+	// echo "<tr><th align='left'>Productos Creados despues de:</th>";
+	// 		echo" <td>
+	// 		<INPUT  type='date' class='texto' value='$fecha_rptdefault' id='fecha_ini' size='10' name='fecha_ini' required>";
+    // 		echo" <input type='button' onClick='buscarProductosFecha(this.form)' value='Ver Productos' class='boton-azul'></td>";
+	// echo "</tr>";
+?>
+<?php
+// Consultas para Grupo
+$sqlGrupos = "SELECT g.codigo, g.nombre, g.abreviatura FROM grupos g WHERE g.estado = 1 ORDER BY g.nombre";
+$respGrupos = mysqli_query($enlaceCon, $sqlGrupos);
+
+// Consultas para Modelo
+$sqlModelos = "SELECT codigo, nombre, abreviatura FROM modelos WHERE estado = 1 ORDER BY nombre";
+$respModelos = mysqli_query($enlaceCon, $sqlModelos);
+?>
+
+<tr>
+	<th align='left'>Grupo:</th>
+	<td>
+		<select name="cod_grupo[]" id="cod_grupo" class='selectpicker' data-actions-box='true' data-style='btn-primary' data-live-search='true' multiple>
+			<?php
+			while ($row = mysqli_fetch_array($respGrupos)) {
+				echo "<option value='{$row['codigo']}'>{$row['nombre']}</option>";
+			}
+			?>
+		</select>
+	</td>
+</tr>
+
+<tr>
+	<th align='left'>Modelo:</th>
+	<td>
+		<select name="cod_modelo[]" id="cod_modelo" class='selectpicker' data-actions-box='true'  data-style='btn-warning' data-live-search='true' multiple>
+			<?php
+			while ($row = mysqli_fetch_array($respModelos)) {
+				echo "<option value='{$row['codigo']}'>{$row['nombre']}</option>";
+			}
+			?>
+		</select>
+	</td>
+</tr>
+
+<tr>
+	<th align='left'>Nombre Producto:</th>
+	<td>
+		<input type="text" class="texto" name="nombre_producto" id="nombre_producto" placeholder="Ingrese nombre o parte del producto">
+		<input type='button' onClick='buscarProductosFecha(this.form)' value='Ver Productos' class='boton-azul'>
+	</td>
+</tr>
+
+<?php
+
 	
 	echo "<tr><th align='left'>Productos</th>
 		<td><div id='div_productos'></div></td></tr>";
@@ -65,7 +112,7 @@ echo"<form method='post' action='' target='_blank'>";
 	echo"\n </table><br>";
 
 	echo "<center>
-	<input type='button' name='reporte' value='Ver Reporte' onclick='enviarFormDetallado(this.form, 1);' class='boton'>
+	<input type='button' name='reporte' value='Ver Analisis' onclick='enviarFormDetallado(this.form, 1);' class='boton'>
 	</center><br>";
 	echo"</form>";
 	echo "</div>";
