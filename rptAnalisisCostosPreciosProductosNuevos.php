@@ -291,19 +291,19 @@ while ($datos = mysqli_fetch_array($resp)) {
 
 		
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue'>
-			<input type='number' class='precio-consignacion-sf' name='precio-consignacion-sf[]' value='0' style='width: 10ch;'>
+			<input type='number' class='precio-consignacion-sf' name='precio-consignacion-sf[]' value='0' style='width: 10ch;' step='0.01'>
 		</td>
 		
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue' class='margen-consignacion-sf'>-</td>
 
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue'>
-			<input type='number' class='precio-ventadirecta-sf' name='precio-ventadirecta-sf[]' value='0' style='width: 10ch;'>
+			<input type='number' class='precio-ventadirecta-sf' name='precio-ventadirecta-sf[]' value='0' style='width: 10ch;' step='0.01'>
 		</td>
 		
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue' class='margen-ventadirecta-sf'>-</td>
 
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue'>
-			<input type='number' class='precio-sugerido-sf' name='precio-sugerido-sf[]' value='0' style='width: 10ch;'>
+			<input type='number' class='precio-sugerido-sf' name='precio-sugerido-sf[]' value='0' style='width: 10ch;'  step='0.01'>
 		</td>
 		
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue' class='margen-sugerido-sf'>-</td>
