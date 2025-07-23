@@ -33,19 +33,22 @@ echo "<h1>Analisis de Costos y Precios</h1>";
 // </div>";
 
 echo "<center><table class='texto'>";
-echo "<tr><th>Cod. Analisis</th><th>Fecha Proceso Analisis</th><th>-</th>
+echo "<tr><th>Cod. Analisis</th><th>Fecha Proceso Analisis</th><th>Glosa</th><th>-</th>
 </tr>";
-$consulta = "SELECT id, fecha_proceso from analisis_costos_nuevos order by id desc";
+$consulta = "SELECT id, fecha_proceso, glosa from analisis_costos_nuevos order by id desc";
 //echo $consulta;
 $resp = mysqli_query($enlaceCon,$consulta);
 while ($dat = mysqli_fetch_array($resp)) {
 
 	$idanalisis=$dat[0];
 	$fechainicio=$dat[1];
+    $glosa=$dat[2];
 
     echo "<tr>
     	<td align='center'>$idanalisis</td>
-    	<td align='center'>$fechainicio</td>";
+    	<td align='center'>$fechainicio</td>
+        <td align='center'>$glosa</td>
+        ";
 	 
 	 echo "	<td align='center'>
 		<a target='_BLANK' href='detalleAnalisisCostosPreciosNuevo.php?idanalisis=$idanalisis'>

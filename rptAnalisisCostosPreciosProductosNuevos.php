@@ -94,7 +94,7 @@ ini_set('display_errors', '1');
 <?php
 $sqlUTF = mysqli_query($enlaceCon, "SET NAMES utf8");
 
-$fecha_ini = $_POST['fecha_ini'];
+//$fecha_ini = $_POST['fecha_ini'];
 
 
 $rpt_territorio = $_POST['rpt_territorio'];
@@ -115,10 +115,15 @@ $cantidadVentasTotales=0;
 $costoProductosTotalesReporte = obtenerCostosTotalesUnitariosProducto($rptProductosString, $rptTerritorioString);
 //echo "costos totales directos: ".$costoProductosTotalesReporte;
 
+//<br> De: $fecha_ini A: $fecha_fin
+
+echo "<form method='POST' action='guardar_analisisnuevos.php'>";
 
 echo "<table align='center' class='textotit' width='100%'><tr><td align='center'>Analisis de Costos y Precios
-	<br>Territorio: $nombre_territorio <br> De: $fecha_ini A: $fecha_fin
-	<br>Fecha Reporte: $fecha_reporte</tr></table>";
+	<br>Territorio: $nombre_territorio 
+	<br>Fecha Reporte: $fecha_reporte
+	<br>Glosa: <input type='text' class='texto' name='glosa' id='glosa' size='50'>
+	</tr></table>";
 
 $sql = "SELECT m.codigo_material, m.descripcion_material, (0)montoVenta, (0)cantidad_unitaria, 0 as descuento, 0 as monto_total, 'PRODUCTO' as tipoagrupacion, pc.costo_si_no 
 from material_apoyo m 
@@ -131,7 +136,6 @@ GROUP BY m.codigo_material";
 
 $resp = mysqli_query($enlaceCon, $sql);
 
-echo "<form method='POST' action='guardar_analisisnuevos.php'>";
 
 echo "<br>
 <table align='center' class='texto' width='100%'>
@@ -276,27 +280,30 @@ while ($datos = mysqli_fetch_array($resp)) {
 
 		<td align='right' class='porcentaje-cantidad-producir'>-</td>
 
+		<td style='display:none;'><input type='hidden' class='costo_indirecto_distribuido' name='costo_indirecto_distribuido[]' value='0' style='width: 10ch;'></td>
 		<td align='right' class='costo-indirecto-distribuido'>-</td>
 		
+		<td style='display:none;'><input type='hidden' class='costo_indirecto_unitario' name='costo_indirecto_unitario[]' value='0' style='width: 10ch;'></td>
 		<td align='right' class='costo-indirecto-unitario'>-</td>
 		
+		<td style='display:none;'><input type='hidden' class='costo_total_unitario' name='costo_total_unitario[]' value='0' style='width: 10ch;'></td>
 		<td align='right' class='total-costo-unitario'>-</td>
 
 		
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue'>
-			<input type='number' class='precio-consignacion-sf' name='precio-consignacion-sf[]' value='0' style='width: 10ch;'>
+			<input type='number' class='precio-consignacion-sf' name='precio-consignacion-sf[]' value='0' style='width: 10ch;' step='0.01'>
 		</td>
 		
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue' class='margen-consignacion-sf'>-</td>
 
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue'>
-			<input type='number' class='precio-ventadirecta-sf' name='precio-ventadirecta-sf[]' value='0' style='width: 10ch;'>
+			<input type='number' class='precio-ventadirecta-sf' name='precio-ventadirecta-sf[]' value='0' style='width: 10ch;' step='0.01'>
 		</td>
 		
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue' class='margen-ventadirecta-sf'>-</td>
 
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue'>
-			<input type='number' class='precio-sugerido-sf' name='precio-sugerido-sf[]' value='0' style='width: 10ch;'>
+			<input type='number' class='precio-sugerido-sf' name='precio-sugerido-sf[]' value='0' style='width: 10ch;'  step='0.01'>
 		</td>
 		
 		<td align='center' style='border: gray 1px solid; background-color: LightBlue' class='margen-sugerido-sf'>-</td>
@@ -432,14 +439,19 @@ echo "<center><input type='submit' class='boton2' value='Guardar Analisis'></cen
 				var costoIndirectoDistribuidoOriginal = ((( parseFloat(porcentajeCostoUnitario) + parseFloat(porcentajeCantidad) ) / 2) /100) * parseFloat(totalHoras*17);
 				var costoIndirectoDistribuido = formatNumber(( ((parseFloat(porcentajeCostoUnitario) + parseFloat(porcentajeCantidad))/2)/100) * parseFloat(totalHoras*17));
 				$row.find('.costo-indirecto-distribuido').text(costoIndirectoDistribuido);
+				$row.find('.costo_indirecto_distribuido').val(( ((parseFloat(porcentajeCostoUnitario) + parseFloat(porcentajeCantidad))/2)/100) * parseFloat(totalHoras*17));
+				
 				
 				var costoIndirectoUnitario = formatNumber(parseFloat(costoIndirectoDistribuidoOriginal) / parseFloat(cantidad));
 				$row.find('.costo-indirecto-unitario').text(costoIndirectoUnitario);
+				$row.find('.costo_indirecto_unitario').val(parseFloat(costoIndirectoDistribuidoOriginal) / parseFloat(cantidad));
 				
 				var costoDirectoProducto = parseFormattedNumber($row.find('.costo-directo-producto').text().trim());
 				var costoTotalProducto = formatNumber(parseFloat(costoDirectoProducto) + parseFloat(costoIndirectoUnitario));
 
 				$row.find('.total-costo-unitario').text(costoTotalProducto);
+				$row.find('.costo_total_unitario').val(parseFloat(costoDirectoProducto) + parseFloat(costoIndirectoUnitario));
+				
 				
 				//console.log('porcentajeCostoUnitario: '+porcentajeCostoUnitario+' porcentajeCantidad: '+porcentajeCantidad+ 'horas: '+totalHoras+' montocalculado: '+costoIndirectoDistribuido );
 			});
