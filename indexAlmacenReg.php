@@ -222,6 +222,7 @@ include("datosUsuario.php");
 						
 					<li><a href="rptOpAnalisisCostoPrecio.php" target="contenedorPrincipal">Analisis de Costos y Precios</a></li>
 					<li><a href="rptOpAnalisisCostoPrecioNuevos.php" target="contenedorPrincipal">Analisis de Costos y Precios Productos Nuevos</a></li>
+					
 					<!--li><span>Utilidades</span>
 						<ul>
 							<li><a href="rptOpUtilidadesDocumento.php" target="contenedorPrincipal">Utilidades x Documento</a></li>
