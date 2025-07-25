@@ -1,68 +1,113 @@
 <?php
-require("conexionmysqli.inc");
-require('function_formatofecha.php');
-require("estilos_almacenes.inc");
+require("conexionmysqli.php");
 ?>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link href="lib/externos/jquery/jquery-ui/completo/jquery-ui-1.8.9.custom.css" rel="stylesheet" type="text/css"/>
-        <link href="lib/css/paneles.css" rel="stylesheet" type="text/css"/>
-        <script type="text/javascript" src="lib/externos/jquery/jquery-1.4.4.min.js"></script>
-        <script type="text/javascript" src="lib/externos/jquery/jquery-ui/minimo/jquery.ui.core.min.js"></script>
-        <script type="text/javascript" src="lib/externos/jquery/jquery-ui/minimo/jquery.ui.widget.min.js"></script>
-        <script type="text/javascript" src="lib/externos/jquery/jquery-ui/minimo/jquery.ui.button.min.js"></script>
-        <script type="text/javascript" src="lib/externos/jquery/jquery-ui/minimo/jquery.ui.mouse.min.js"></script>
-        <script type="text/javascript" src="lib/externos/jquery/jquery-ui/minimo/jquery.ui.draggable.min.js"></script>
-        <script type="text/javascript" src="lib/externos/jquery/jquery-ui/minimo/jquery.ui.position.min.js"></script>
-        <script type="text/javascript" src="lib/externos/jquery/jquery-ui/minimo/jquery.ui.resizable.min.js"></script>
-        <script type="text/javascript" src="lib/externos/jquery/jquery-ui/minimo/jquery.ui.dialog.min.js"></script>
-        <script type="text/javascript" src="lib/externos/jquery/jquery-ui/minimo/jquery.ui.datepicker.min.js"></script>
-        <script type="text/javascript" src="lib/js/xlibPrototipo-v0.1.js"></script>
-        <script type='text/javascript' language='javascript'>
-        </script>
-    </head>
-    <body>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<?php
+<div class="container mt-4">
+    <h3 class="mb-4">Lista de Análisis de Costos</h3>
+    <table class="table table-bordered table-striped align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th width="10%">Código</th>
+                <th width="20%">Fecha Proceso</th>
+                <th width="50%">Glosa</th>
+                <th width="20%">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
+        $consulta = "SELECT id, fecha_proceso, glosa, estado FROM analisis_costos_nuevos WHERE estado = 1 ORDER BY id DESC";
+        $resp = mysqli_query($enlaceCon, $consulta);
 
-echo "<h1>Analisis de Costos y Precios</h1>";
+        while ($dat = mysqli_fetch_array($resp)) {
+            $idanalisis = $dat['id'];
+            $fechainicio = $dat['fecha_proceso'];
+            $glosa = $dat['glosa'];
+            $estado = $dat['estado'];
 
-// echo "<div class='divBotones'>
-// 	<input type='button' value='Registrar Nuevo Analisis' name='adicionar' class='boton' onclick='location.href='rptOpAnalisisCostoPrecio.php'>
-// </div>";
+            // Badge con estilo Bootstrap
+            switch ($estado) {
+                case 1:
+                    $badge = "<span class='badge bg-success'>Activo</span>";
+                    break;
+                case 0:
+                    $badge = "<span class='badge bg-secondary'>Inactivo</span>";
+                    break;
+                default:
+                    $badge = "<span class='badge bg-danger'>Desconocido</span>";
+                    break;
+            }
 
-echo "<center><table class='texto'>";
-echo "<tr><th>Cod. Analisis</th><th>Fecha Proceso Analisis</th><th>Glosa</th><th>-</th>
-</tr>";
-$consulta = "SELECT id, fecha_proceso, glosa from analisis_costos_nuevos order by id desc";
-//echo $consulta;
-$resp = mysqli_query($enlaceCon,$consulta);
-while ($dat = mysqli_fetch_array($resp)) {
+            echo "<tr>
+                <td>$idanalisis</td>
+                <td>$fechainicio</td>
+                <td>$glosa</td>
+                <td>
+                    <a target='_blank' href='detalleAnalisisCostosPreciosNuevo.php?idanalisis=$idanalisis' class='btn btn-sm btn-info' title='Ver Detalle'>
+                        <i class='bi bi-eye'></i>
+                    </a>
+                    <a href='rptAnalisisCostosPreciosProductosNuevosEditar.php?idanalisis=$idanalisis' class='btn btn-sm btn-warning' title='Editar'>
+                        <i class='bi bi-pencil'></i>
+                    </a>
+                    <button onclick=\"cambiarEstado($idanalisis)\" class='btn btn-sm btn-danger' title='Marcar como Inactivo'>
+                        <i class='bi bi-trash'></i>
+                    </button>
+                </td>
+            </tr>";
+        }
+        ?>
+        </tbody>
+    </table>
+</div>
 
-	$idanalisis=$dat[0];
-	$fechainicio=$dat[1];
-    $glosa=$dat[2];
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+    table th, table td {
+        padding: 0.4rem 0.6rem !important;
+        vertical-align: middle;
+    }
+    table th {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    table td {
+        font-size: 0.88rem;
+    }
+</style>
+<script>
+function cambiarEstado(id) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Esta acción marcará el análisis como inactivo.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, confirmar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33'
+    }).then((result) => {
+        if (result.value) {
+            $.ajax({
+                url: 'update_estado_analisis.php',
+                type: 'POST',
+                data: { id: id },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.status) {
+                        Swal.fire('¡Actualizado!', data.message, 'success')
+                            .then(() => location.reload());
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error de conexión:', error);
+                    Swal.fire('Error', 'Ocurrió un error al conectar con el servidor.', 'error');
+                }
+            });
 
-    echo "<tr>
-    	<td align='center'>$idanalisis</td>
-    	<td align='center'>$fechainicio</td>
-        <td align='center'>$glosa</td>
-        ";
-	 
-	 echo "	<td align='center'>
-		<a target='_BLANK' href='detalleAnalisisCostosPreciosNuevo.php?idanalisis=$idanalisis'>
-			<img src='imagenes/detalles.png' border='0' width='30' heigth='30' title='Ver Detalle'>
-		</a>
-	</td></tr>";
+        }
+    });
 }
-echo "</table></center><br>";
-echo "</div>";
-
-echo "<div class='divBotones'>
-	<a href='rptOpAnalisisCostoPrecioNuevos.php' class='boton2' target='_BLANK'><span style='color:orange;'>Registrar Nuevo Analisis</span></a>
-</div>";
-
-
-echo "</form>";
-?>
+</script>
