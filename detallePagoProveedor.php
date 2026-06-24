@@ -174,6 +174,8 @@ where ppc.cod_pago=".$cod_pago;
 					and lpc.cod_proceso_const=".$cod_proceso_const."
 					 order by lpc.obligacionxpagar_fecha asc, lp.nro_lote asc";
 					 //echo $sqlLotes;
+					 $nro_lote="";
+					 $descripcion_material="";
 					$respLotes=mysqli_query($enlaceCon,$sqlLotes);
 					while($datLotes=mysqli_fetch_array($respLotes)){
 						$nro_lote=$datLotes['nro_lote'];

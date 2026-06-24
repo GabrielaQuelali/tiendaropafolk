@@ -30,10 +30,10 @@ function validar(){
 		montoTotalPago=document.getElementById('montoTotalPago').innerHTML;
 		montoTotalaPagarDeuda=document.getElementById('divMontoTotalaPagarDeuda').innerHTML;
 		montoTotalPago=parseFloat(montoTotalPago);
-		montoTotalPago=montoTotalPago.toFixed(2);
+		//montoTotalPago=montoTotalPago.toFixed(2);
 
 		montoTotalaPagarDeuda=parseFloat(montoTotalaPagarDeuda);
-		montoTotalaPagarDeuda=montoTotalaPagarDeuda.toFixed(2);
+		//montoTotalaPagarDeuda=montoTotalaPagarDeuda.toFixed(2);
 	
 		if(montoTotalPago!=montoTotalaPagarDeuda){
 			alert ("La suma de Documentos que se desea pagar es distinto al Monto de Pago.");
@@ -82,25 +82,50 @@ function calcularTotalPago(){
 	document.getElementById('montoTotalPago').innerHTML=montoTotalPago;
 }
 
+
+function habDeshPago(lpp){	
+	var j;
+	
+	var frm = document.getElementById("form1");
+
+	for (j=0;j<frm.elements.length;j++){
+		if((frm.elements[j].name)=="docPagar"+lpp){
+			if(frm.elements[j].checked){
+
+				frm.elements[j+2].disabled=false;
+				frm.elements[j+2].value=frm.elements[j+1].value;
+
+			}else{
+				frm.elements[j+2].disabled=true;
+				
+				frm.elements[j+2].value=0;
+
+			}						
+		}
+	}
+
+	sumarPagoDeudaLote();
+
+	//document.getElementById('divMontoTotalaPagarDeuda').innerHTML=totalAuxiliar;
+}
+
+
 function sumarPagoDeudaLote(){
-	//alert("holaaa");
+	//alert("hola="+lpp);
+	
 	var j;
 	var totalAuxiliar=0;
 	var frm = document.getElementById("form1");
 
 	for (j=0;j<frm.elements.length;j++){
-		if((frm.elements[j].name).indexOf('docPagar')!=-1){
-			if(frm.elements[j].checked){
-				frm.elements[j+2].disabled=false;
-				if(frm.elements[j+2].value){
-					totalAuxiliar=totalAuxiliar+parseFloat(frm.elements[j+2].value);
-					totalAuxiliar=totalAuxiliar.toFixed(2);
-				}
-			}else{
-				frm.elements[j+2].disabled=true;
-				frm.elements[j+2].value=0;
-				
 
+		if((frm.elements[j].name).indexOf("docPagar")!=-1){
+		
+			if(frm.elements[j].checked){
+
+					totalAuxiliar=totalAuxiliar+parseFloat(frm.elements[j+2].value);
+					//totalAuxiliar=totalAuxiliar.toFixed(2);
+				
 			}						
 		}
 	}
@@ -114,18 +139,21 @@ function checkearRegistros(){
 	var totalAuxiliar=0;
 	if(frm.selectReg.checked){
 		for (j=0;j<frm.elements.length;j++){
-			if((frm.elements[j].name).indexOf('docPagar')!=-1){
+			if((frm.elements[j].name).indexOf("docPagar")!=-1){
+				
 				frm.elements[j].checked=true;
+				frm.elements[j+2].disabled=false;
 				frm.elements[j+2].value=frm.elements[j+1].value;
-				totalAuxiliar=totalAuxiliar+parseFloat(frm.elements[j+1].value);
-				totalAuxiliar=totalAuxiliar.toFixed(2);
+				totalAuxiliar=totalAuxiliar+parseFloat(frm.elements[j+2].value);
+				//totalAuxiliar=totalAuxiliar.toFixed(2);
+				
 			}
 		}
 		document.getElementById('divMontoTotalaPagarDeuda').innerHTML=totalAuxiliar;
 	}else{
 
 		for (j=0;j<frm.elements.length;j++){
-			if((frm.elements[j].name).indexOf('docPagar')!=-1){
+			if((frm.elements[j].name).indexOf("docPagar")!=-1){
 				frm.elements[j].checked=false;
 				frm.elements[j+2].value=0;
 				frm.elements[j+2].disabled=true;
@@ -153,7 +181,7 @@ function distribuirMontoTotalPago(){
 	document.getElementById('montoTotalPago').innerHTML=montoaDistribuir;
 	
 
-	var j;
+	/*var j;
 	//var cadena="";
 	var auxiliarMonto=0;
 	for (j=0;j<frm.elements.length;j++){
@@ -177,7 +205,8 @@ function distribuirMontoTotalPago(){
 			}						
 		}
 	}
-	document.getElementById('divMontoTotalaPagarDeuda').innerHTML=auxiliarMonto;
+	document.getElementById('divMontoTotalaPagarDeuda').innerHTML=auxiliarMonto;*/
+	document.getElementById('divMontoTotalaPagarDeuda').innerHTML=montoaDistribuir;
 	
 }
 

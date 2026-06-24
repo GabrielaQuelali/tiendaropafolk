@@ -21,7 +21,7 @@ and  lpc.cod_estado_pago<>3
 and lpc.cod_proveedor=".$codProveedor."
 order by lpc.obligacionxpagar_fecha asc,lp.nro_lote asc";
 
-//echo $sqlObligxPagar."<br>";
+echo $sqlObligxPagar."<br>";
 $respObligxPagar=mysqli_query($enlaceCon,$sqlObligxPagar);
 
 ?>
@@ -36,7 +36,9 @@ $respObligxPagar=mysqli_query($enlaceCon,$sqlObligxPagar);
 $corr=0;
 while($datObligxPagar=mysqli_fetch_array($respObligxPagar)){
 	$corr++;
-
+	$cod_lote;
+	$cod_proceso_const;
+	$cod_proveedor;
 	$cod_lote=$datObligxPagar['cod_lote'];
 	$cod_proceso_const=$datObligxPagar['cod_proceso_const'];
 	$nombre_proceso_const=$datObligxPagar['nombre_proceso_const'];
@@ -96,9 +98,10 @@ while($datObligxPagar=mysqli_fetch_array($respObligxPagar)){
 
 	<tr >
 		<td><?=$corr;?></td>
-		<td><input type="checkbox"  id="docPagar<?=$cod_lote.$cod_proceso_const.$cod_proveedor;?>"
+		<td>
+			<input type="checkbox"  id="docPagar<?=$cod_lote.$cod_proceso_const.$cod_proveedor;?>"
 			name="docPagar<?=$cod_lote.$cod_proceso_const.$cod_proveedor;?>"
-		 checked onclick="sumarPagoDeudaLote()" ></td>
+		 checked onclick="habDeshPago(<?=$cod_lote.$cod_proceso_const.$cod_proveedor?>)" ></td>
 		<td><?=$abrev_tipo_doc_obligxpagar;?></td>
 		<td><?=$nro_lote;?></td>
 		<td><?=$obligacionxpagar_fecha;?></td>
@@ -106,7 +109,8 @@ while($datObligxPagar=mysqli_fetch_array($respObligxPagar)){
 		<td><?=$precioProcesoCons;?></td><td><?=$acuentaProcesoCons;?></td><td><?=$saldoProcesoCons;?></td>
 		<td>
 			<input type="hidden" name="saldoDeudaLote<?=$cod_lote.$cod_proceso_const.$cod_proveedor?>" 
-			id="saldoDeudaLote<?=$cod_lote.$cod_proceso_const.$cod_proveedor?>" value="<?=$saldoProcesoCons;?>">
+			id="saldoDeudaLote<?=$cod_lote.$cod_proceso_const.$cod_proveedor?>"
+			 value="<?=$saldoProcesoCons;?>">
 			<input size="7" class="inputnumber" type="number" 
 			name="montoPagoDeudaLote<?=$cod_lote.$cod_proceso_const.$cod_proveedor?>" 
 			id="montoPagoDeudaLote<?=$cod_lote.$cod_proceso_const.$cod_proveedor?>" 

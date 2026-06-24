@@ -282,7 +282,9 @@ while($dat=mysqli_fetch_array($resp)){
 		$codigo_material=$datIng['cod_material'];
 		$cantIngreso=$datIng['cantIngreso'];
 		$sqlProducto="select  descripcion_material from material_apoyo where codigo_material=".$codigo_material;
+		//echo $sqlProducto."<br>";
 		$respProducto=mysqli_query($enlaceCon,$sqlProducto);
+
 		while($datProducto=mysqli_fetch_array($respProducto)){
 			$descripcion_material=$datProducto['descripcion_material'];
 		}
@@ -324,17 +326,17 @@ while($dat=mysqli_fetch_array($resp)){
 	<input class="inputnumber" type="number" value="0"  id="cantidad_venta<?=$num;?>" name="cantidad_venta<?=$num;?>" onChange='calculaTotal(this.form,<?=$num;?>);' onKeyUp='calculaTotal(this.form,<?=$num;?>);'  required > 
 </td>
 <td align="center" width="12%">
-	<input class="inputnumber" type="number" value="<?=$precio;?>" min="0.01" id="precio<?=$num;?>" 
+	<input class="inputnumber" type="number" value="<?=$precio;?>" min="0.00" id="precio<?=$num;?>" 
 	name="precio<?=$num;?>" step="0.01" readonly> 
 </td>
 
 <td align="center" width="12%">
-	<input class="inputnumber" type="number" value="<?=$precio;?>"  id="precio_venta<?=$num;?>" 
-	name="precio_venta<?=$num;?>" onChange='calculaTotal(this.form,<?=$num;?>);' onKeyUp='calculaTotal(this.form,<?=$num;?>);'  required> 
+	<input class="inputnumber" type="number" value="<?=$precio;?>"  min="0.00" id="precio_venta<?=$num;?>" 
+	name="precio_venta<?=$num;?>" onChange='calculaTotal(this.form,<?=$num;?>);' onKeyUp='calculaTotal(this.form,<?=$num;?>);' step="0.01"  required> 
 </td>
 <td align="center" width="12%">
-	<input class="inputnumber" type="number" value="0" id="total<?=$num;?>" 
-	name="total<?=$num;?>"  readonly> 
+	<input class="inputnumber" type="number" value="0" min="0.00" id="total<?=$num;?>" 
+	name="total<?=$num;?>" step="0.01"  readonly> 
 </td>
 
 </tr>
