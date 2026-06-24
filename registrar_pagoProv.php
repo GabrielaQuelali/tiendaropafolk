@@ -30,10 +30,10 @@ function validar(){
 		montoTotalPago=document.getElementById('montoTotalPago').innerHTML;
 		montoTotalaPagarDeuda=document.getElementById('divMontoTotalaPagarDeuda').innerHTML;
 		montoTotalPago=parseFloat(montoTotalPago);
-		//montoTotalPago=montoTotalPago.toFixed(2);
+		montoTotalPago=montoTotalPago.toFixed(2);
 
 		montoTotalaPagarDeuda=parseFloat(montoTotalaPagarDeuda);
-		//montoTotalaPagarDeuda=montoTotalaPagarDeuda.toFixed(2);
+		montoTotalaPagarDeuda=montoTotalaPagarDeuda.toFixed(2);
 	
 		if(montoTotalPago!=montoTotalaPagarDeuda){
 			alert ("La suma de Documentos que se desea pagar es distinto al Monto de Pago.");

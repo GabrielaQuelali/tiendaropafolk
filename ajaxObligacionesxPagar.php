@@ -21,7 +21,7 @@ and  lpc.cod_estado_pago<>3
 and lpc.cod_proveedor=".$codProveedor."
 order by lpc.obligacionxpagar_fecha asc,lp.nro_lote asc";
 
-echo $sqlObligxPagar."<br>";
+//echo $sqlObligxPagar."<br>";
 $respObligxPagar=mysqli_query($enlaceCon,$sqlObligxPagar);
 
 ?>
@@ -154,7 +154,7 @@ while($datObligxPagar=mysqli_fetch_array($respObligxPagar)){
 <tr >
 		<td><?=$nombre_tipopago;?></td>
 		<td><input size="7" class="inputnumber" type="number" name="montoTipoPago<?=$cod_tipopago;?>"
-		 id="montoTipoPago<?=$cod_tipopago;?>" step="0.01"  value="0" onKeyUp="calcularTotalPago();"></td>
+		 id="montoTipoPago<?=$cod_tipopago;?>" step="0.0001"  value="0" onKeyUp="calcularTotalPago();"></td>
 		 <td>
 <?php 
 	if($banco==1){
