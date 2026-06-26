@@ -168,6 +168,8 @@ function checkearRegistros(){
 
 function distribuirMontoTotalPago(){
 
+	//alert(document.getElementById('divMontoTotalaPagarDeuda').innerHTML);
+
 	var frm = document.getElementById("form1");
 	//alert(frm.name);
 	
@@ -179,6 +181,7 @@ function distribuirMontoTotalPago(){
 		}
 	}
 	document.getElementById('montoTotalPago').innerHTML=montoaDistribuir;
+	//divMontoTotalaPagarDeuda
 	
 
 	/*var j;
@@ -206,7 +209,7 @@ function distribuirMontoTotalPago(){
 		}
 	}
 	document.getElementById('divMontoTotalaPagarDeuda').innerHTML=auxiliarMonto;*/
-	document.getElementById('divMontoTotalaPagarDeuda').innerHTML=montoaDistribuir;
+	//document.getElementById('divMontoTotalaPagarDeuda').innerHTML=montoaDistribuir;
 	
 }
 
